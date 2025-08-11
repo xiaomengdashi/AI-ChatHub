@@ -168,6 +168,15 @@ python init_default_models.py
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
+MIT License 允许您：
+- ✅ 商业使用
+- ✅ 修改代码
+- ✅ 分发代码
+- ✅ 私人使用
+- ✅ 专利使用
+
+唯一要求是在所有副本中包含原始许可证和版权声明。
+
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
