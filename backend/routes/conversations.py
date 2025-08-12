@@ -12,7 +12,7 @@ def get_conversations(current_user):
     """获取用户的对话列表"""
     from sqlalchemy import func
     
-    user_id = request.args.get('user_id', 1, type=int)
+    user_id = current_user.id
     
     # 获取对话列表并统计每个对话的用户消息数量（只统计用户发出的问题）
     conversations_with_count = db.session.query(
@@ -110,7 +110,7 @@ def get_stats(current_user):
     import uuid
     from sqlalchemy import func
     
-    user_id = request.args.get('user_id', 1, type=int)
+    user_id = current_user.id
     
     user = User.query.get(user_id)
     if not user:

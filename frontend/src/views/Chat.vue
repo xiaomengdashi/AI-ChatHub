@@ -218,7 +218,7 @@ export default {
       availableModels: [],
       inputMessage: '',
       isLoading: false,
-      userId: 1, // 简化处理，实际应该从认证中获取
+      userId: null,
       showScrollButton: false,
       hasNewContent: false,
       lastScrollTop: 0,
@@ -267,9 +267,7 @@ export default {
     
     async loadConversations() {
       try {
-        const response = await request.get('/api/conversations', {
-          params: { user_id: this.userId }
-        })
+        const response = await request.get('/api/conversations')
         this.conversations = response.data
       } catch (error) {
         console.error('加载对话列表失败:', error)

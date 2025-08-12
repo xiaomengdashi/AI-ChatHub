@@ -149,12 +149,7 @@ def toggle_model(current_user, model_id):
 
 @models_bp.route('/api/models/providers', methods=['GET'])
 def get_providers():
-    """获取所有模型提供商列表"""
     try:
-        providers = db.session.query(
-            Model.model_provider
-        ).filter(Model.is_active == True).distinct().all()
-        
         # 提供商显示名称映射
         provider_display_map = {
             'openai': 'OpenAI',
@@ -171,11 +166,8 @@ def get_providers():
         }
         
         provider_list = [
-            {
-                'provider': provider[0],
-                'display_name': provider_display_map.get(provider[0], provider[0])
-            }
-            for provider in providers
+            { 'provider': key, 'display_name': value }
+            for key, value in provider_display_map.items()
         ]
         
         return jsonify(provider_list)

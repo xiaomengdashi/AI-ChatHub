@@ -28,7 +28,7 @@ def chat(current_user):
     conversation_id = data.get('conversation_id')
     if not conversation_id:
         conversation_id = str(uuid.uuid4())
-    user_id = data.get('user_id', 1)  # 简化处理，实际应该从认证中获取
+    user_id = current_user.id
     
     try:
         # 查找或创建对话
@@ -99,7 +99,7 @@ def chat_stream(current_user):
     conversation_id = data.get('conversation_id')
     if not conversation_id:
         conversation_id = str(uuid.uuid4())
-    user_id = data.get('user_id', 1)
+    user_id = current_user.id
     
     # 在路由函数中获取应用实例
     app = current_app._get_current_object()

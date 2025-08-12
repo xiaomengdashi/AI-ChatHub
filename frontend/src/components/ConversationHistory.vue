@@ -238,9 +238,7 @@ export default {
     async loadConversations() {
       this.loading = true
       try {
-        const response = await request.get('/api/conversations', {
-          params: { user_id: 1 }
-        })
+        const response = await request.get('/api/conversations')
         
         this.conversations = response.data.map(conv => ({
           ...conv,

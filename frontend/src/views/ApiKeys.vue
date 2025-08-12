@@ -12,10 +12,9 @@
           <a-col :span="8">
             <a-form-item label="模型平台" name="model_provider">
               <a-select v-model:value="newKey.model_provider" placeholder="选择模型平台" style="width: 100%">
-                <a-select-option value="openai">OpenAI (GPT-4o, GPT-4o Mini)</a-select-option>
-                <a-select-option value="anthropic">Anthropic (Claude-3.5 Sonnet, Claude-3 Haiku)</a-select-option>
-                <a-select-option value="google">Google (Gemini 1.5 Pro, Gemini 1.5 Flash)</a-select-option>
-                <a-select-option value="SiliconFlow">硅基流动 (QwQ-32B)</a-select-option>
+                <a-select-option v-for="p in providers" :key="p.provider" :value="p.provider">
+                  {{ p.display_name }}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -160,7 +159,18 @@ export default {
     const updating = ref(false)
     const editDialogVisible = ref(false)
     const keyForm = ref(null)
-    
+
+    const providers = ref([])
+    const loadProviders = async () => {
+      try {
+        const response = await request.get('/api/models/providers')
+        providers.value = Array.isArray(response.data) ? response.data : []
+      } catch (error) {
+        console.error('加载模型平台失败:', error)
+        message.error('加载模型平台失败: ' + (error.response?.data?.error || error.message), 2)
+      }
+    }
+
     const apiKeys = ref([])
     const newKey = reactive({
       model_provider: '',
@@ -308,13 +318,23 @@ export default {
 
     // 获取模型显示名称
     const getModelDisplayName = (modelName) => {
-      const modelMap = {
+      const hit = providers.value.find(p => p.provider === modelName)
+      if (hit) return hit.display_name
+      // 兜底映射，防止 providers 尚未加载完成
+      const fallback = {
         'openai': 'OpenAI',
         'anthropic': 'Anthropic',
         'google': 'Google',
-        'SiliconFlow': '硅基流动'
+        'baidu': '百度',
+        'alibaba': '阿里巴巴',
+        'zhipu': '智谱AI',
+        'meta': 'Meta',
+        'siliconflow': '硅基流动',
+        'deepseek': 'DeepSeek',
+        'moonshot': '月之暗面',
+        'qwen': '通义千问'
       }
-      return modelMap[modelName] || modelName
+      return fallback[modelName] || modelName
     }
 
     // 获取模型标签颜色
@@ -323,7 +343,14 @@ export default {
         'openai': 'green',
         'anthropic': 'orange',
         'google': 'blue',
-        'SiliconFlow': 'cyan'
+        'baidu': 'purple',
+        'alibaba': 'magenta',
+        'zhipu': 'geekblue',
+        'meta': 'volcano',
+        'siliconflow': 'cyan',
+        'deepseek': 'lime',
+        'moonshot': 'gold',
+        'qwen': 'red'
       }
       return colorMap[modelName] || 'default'
     }
@@ -370,6 +397,7 @@ export default {
     ]
 
     onMounted(() => {
+      loadProviders()
       loadApiKeys()
     })
 
@@ -379,6 +407,7 @@ export default {
       updating,
       editDialogVisible,
       keyForm,
+      providers,      
       apiKeys,
       newKey,
       editingKey,
