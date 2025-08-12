@@ -8,6 +8,7 @@ import Models from '../views/Models.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import UserManagement from '../views/UserManagement.vue'
+import ConversationDetail from '../views/ConversationDetail.vue'
 
 
 // 检查用户是否已登录
@@ -47,6 +48,12 @@ const routes = [
       component: Chat,
       meta: { requiresAuth: true }
     },
+  {
+    path: '/conversations/:id',
+    name: 'ConversationDetail',
+    component: ConversationDetail,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/pricing',
     name: 'Pricing',

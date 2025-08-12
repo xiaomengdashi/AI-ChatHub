@@ -332,16 +332,16 @@ export default {
         this.userStats = statsResponse.data
         
         // 加载最近对话
-        const conversationsResponse = await request.get('/api/conversations', {
-          params: { user_id: 1 }
-        })
-        this.recentConversations = conversationsResponse.data.slice(0, 5)
-        
-        // 为最近对话标签页加载更多对话
-        const allConversationsResponse = await request.get('/api/conversations', {
-          params: { user_id: 1, limit: 20 }
-        })
-        this.allRecentConversations = allConversationsResponse.data || []
+        try {
+          const conversationsResponse = await request.get('/api/conversations')
+          this.recentConversations = conversationsResponse.data.slice(0, 5)
+          const allConversationsResponse = await request.get('/api/conversations', { params: { limit: 20 } })
+          this.allRecentConversations = allConversationsResponse.data || []
+        } catch (e) {
+          // 非管理员会收到403，这里吞掉错误，保持仪表盘其他模块可用
+          this.recentConversations = []
+          this.allRecentConversations = []
+        }
         
       } catch (error) {
         console.error('加载控制台数据失败:', error)
@@ -362,7 +362,7 @@ export default {
     },
     
     goToConversation(conversationId) {
-      this.$router.push(`/chat?conversation=${conversationId}`)
+      this.$router.push(`/conversations/${conversationId}`)
     },
     
     getUsageTagType() {

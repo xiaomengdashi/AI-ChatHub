@@ -621,7 +621,7 @@ export default {
 :deep(.ant-select-single .ant-select-selector) {
   border-radius: 12px;
   border: 2px solid rgba(102, 126, 234, 0.1);
-  height: 60px;
+  height: 35px;
   padding: 0 12px;
   display: flex;
   align-items: center;

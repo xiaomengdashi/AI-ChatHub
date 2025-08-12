@@ -28,16 +28,24 @@
               <a-tag class="model-tag" color="blue">{{ conversation.model }}</a-tag>
               <span class="time">{{ formatTime(conversation.updated_at) }}</span>
             </div>
-            <a-button 
-              class="delete-btn"
-              size="small"
-              type="text"
-              danger
-              shape="circle"
-              @click.stop="deleteConversation(conversation.conversation_id)"
+            <a-popconfirm
+              title="确定要删除这个对话吗？"
+              ok-text="删除"
+              cancel-text="取消"
+              placement="left"
+              @confirm="deleteConversation(conversation.conversation_id)"
             >
-              <template #icon><DeleteOutlined /></template>
-            </a-button>
+              <a-button 
+                class="delete-btn"
+                size="small"
+                type="text"
+                danger
+                shape="circle"
+                @click.stop="noop"
+              >
+                <template #icon><DeleteOutlined /></template>
+              </a-button>
+            </a-popconfirm>
           </div>
         </div>
       </div>
@@ -92,7 +100,7 @@
                 <template #icon><UserOutlined /></template>
               </a-avatar>
               <a-avatar v-else class="ai-avatar">
-                <template #icon><RobotOutlined /></template>
+                <template #icon><MessageOutlined /></template>
               </a-avatar>
             </div>
             
@@ -183,8 +191,8 @@ import request, { API_BASE_URL } from '../utils/request'
 import MarkdownRenderer from '../components/MarkdownRenderer.vue'
 import ThemeSwitcher from '../components/ThemeSwitcher.vue'
 import { 
-  UserOutlined, 
-  RobotOutlined, 
+  UserOutlined,
+  MessageOutlined,
   BulbOutlined, 
   SendOutlined, 
   DownOutlined, 
@@ -199,7 +207,7 @@ export default {
     MarkdownRenderer,
     ThemeSwitcher,
     UserOutlined,
-    RobotOutlined,
+    MessageOutlined,
     BulbOutlined,
     SendOutlined,
     DownOutlined,
@@ -533,7 +541,7 @@ export default {
         message.error('删除对话失败')
       }
     },
-    
+    noop() {},
     onModelChange() {
       // 模型变更时创建新对话
       console.log('模型已切换为:', this.selectedModel)

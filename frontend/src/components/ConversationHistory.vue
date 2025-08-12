@@ -43,6 +43,23 @@
               </a-select>
             </div>
             <div class="filter-item">
+              <label>用户筛选：</label>
+              <a-select
+                v-model:value="selectedUser"
+                placeholder="选择用户"
+                style="width: 200px"
+                @change="handleFilter"
+                allowClear
+                showSearch
+                :filterOption="filterUserOption"
+              >
+                <a-select-option value="">全部用户</a-select-option>
+                <a-select-option v-for="user in availableUsers" :key="user.id" :value="user.id">
+                  {{ user.username }}
+                </a-select-option>
+              </a-select>
+            </div>
+            <div class="filter-item">
               <label>时间范围：</label>
               <a-range-picker
                 v-model:value="dateRange"
@@ -122,6 +139,10 @@
               <div class="card-content">
                 <div class="conversation-meta">
                   <a-tag color="blue" size="small">{{ conversation.model }}</a-tag>
+                  <a-tag v-if="conversation.username" color="geekblue" size="small">
+                    <UserOutlined />
+                    <span style="margin-left:4px">{{ conversation.username }}</span>
+                  </a-tag>
                   <span class="message-count">
                     <MessageOutlined />
                     {{ conversation.message_count || 0 }} 条消息
@@ -191,7 +212,8 @@ import {
   EditOutlined,
   DeleteOutlined,
   DownloadOutlined,
-  RightOutlined
+  RightOutlined,
+  UserOutlined
 } from '@ant-design/icons-vue'
 import dayjs from 'dayjs'
 
@@ -205,16 +227,19 @@ export default {
     EditOutlined,
     DeleteOutlined,
     DownloadOutlined,
-    RightOutlined
+    RightOutlined,
+    UserOutlined
   },
   data() {
     return {
       conversations: [],
       filteredConversations: [],
       availableModels: [],
+      availableUsers: [],
       loading: false,
       searchKeyword: '',
       selectedModel: '',
+      selectedUser: '',
       dateRange: null,
       sortBy: 'updated_at_desc',
       currentPage: 1,
@@ -232,27 +257,52 @@ export default {
     }
   },
   async mounted() {
-    await this.loadConversations()
+    await Promise.all([
+      this.loadUsersIfAdmin(),
+      this.loadConversations()
+    ])
   },
   methods: {
+    async loadUsersIfAdmin() {
+      // 检查本地token中的角色
+      const token = localStorage.getItem('token')
+      if (!token) return
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]))
+        if (payload.role === 'admin') {
+          // 加载所有用户，分页设置大一点以取全（后端默认分页，这里取前1000条）
+          const res = await request.get('/api/users', { params: { page: 1, per_page: 1000 } })
+          this.availableUsers = res.data.users || []
+        }
+      } catch (e) {
+        // 忽略解析错误
+      }
+    },
     async loadConversations() {
       this.loading = true
       try {
-        const response = await request.get('/api/conversations')
-        
+        const params = {}
+        if (this.selectedUser) params.user_id = this.selectedUser
+        const response = await request.get('/api/conversations', { params })
+
         this.conversations = response.data.map(conv => ({
           ...conv,
           last_message: this.getLastMessagePreview(conv),
           message_count: conv.message_count || 0
         }))
-        
+
         // 提取可用模型
         this.availableModels = [...new Set(this.conversations.map(conv => conv.model).filter(Boolean))]
-        
+
         this.applyFilters()
       } catch (error) {
         console.error('加载对话失败:', error)
-        message.error('加载对话失败')
+        if (error?.response?.status === 403) {
+          // 非管理员访问会被拒绝
+          message.error('仅管理员可查看对话历史')
+        } else {
+          message.error('加载对话失败')
+        }
       } finally {
         this.loading = false
       }
@@ -271,7 +321,17 @@ export default {
 
     handleFilter() {
       this.currentPage = 1
+      // 当用户筛选改变时重新加载（由后端筛选）
+      if (this.selectedUser !== undefined) {
+        this.loadConversations()
+        return
+      }
       this.applyFilters()
+    },
+
+    filterUserOption(input, option) {
+      const text = option?.children?.toString?.() || ''
+      return text.toLowerCase().includes((input || '').toLowerCase())
     },
 
     applyFilters() {
@@ -281,7 +341,8 @@ export default {
       if (this.searchKeyword) {
         const keyword = this.searchKeyword.toLowerCase()
         filtered = filtered.filter(conv =>
-          conv.title.toLowerCase().includes(keyword)
+          conv.title.toLowerCase().includes(keyword) ||
+          (conv.username && conv.username.toLowerCase().includes(keyword))
         )
       }
 
@@ -326,7 +387,7 @@ export default {
     },
 
     goToConversation(conversationId) {
-      this.$router.push(`/chat?conversation=${conversationId}`)
+      this.$router.push(`/conversations/${conversationId}`)
     },
 
     renameConversation(conversation) {

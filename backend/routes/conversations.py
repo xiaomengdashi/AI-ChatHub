@@ -9,33 +9,51 @@ conversations_bp = Blueprint('conversations', __name__)
 @conversations_bp.route('/api/conversations', methods=['GET'])
 @token_required
 def get_conversations(current_user):
-    """获取用户的对话列表"""
-    from sqlalchemy import func
+    """获取对话列表"""
+    from sqlalchemy import func, and_
+    from utils.constants import ROLE_ADMIN
     
-    user_id = current_user.id
+    # 判断是否为管理员
+    is_admin = current_user.role == ROLE_ADMIN
     
-    # 获取对话列表并统计每个对话的用户消息数量（只统计用户发出的问题）
-    conversations_with_count = db.session.query(
+    # 管理员可按用户筛选；普通用户忽略该参数
+    user_id_filter = request.args.get('user_id', type=int)
+    
+    # 获取对话列表并统计每个对话的用户消息数量（只统计用户发出的问题），并关联用户信息
+    query = db.session.query(
         Conversation,
+        User.username,
         func.count(Message.id).label('message_count')
+    ).join(
+        User, Conversation.user_id == User.id
     ).outerjoin(
         Message, 
-        db.and_(
+        and_(
             Conversation.conversation_id == Message.conversation_id,
             Message.role == 'user'
         )
-    ).filter(
-        Conversation.user_id == user_id
-    ).group_by(
-        Conversation.id
+    )
+    
+    if is_admin:
+        # 管理员：可以查看所有对话，若指定user_id则只看该用户
+        if user_id_filter:
+            query = query.filter(Conversation.user_id == user_id_filter)
+    else:
+        # 普通用户：仅查看自己的对话
+        query = query.filter(Conversation.user_id == current_user.id)
+    
+    conversations_with_count = query.group_by(
+        Conversation.id, User.username
     ).order_by(
         Conversation.updated_at.desc()
     ).all()
     
     result = []
-    for conv, message_count in conversations_with_count:
+    for conv, username, message_count in conversations_with_count:
         conv_dict = conv.to_dict()
         conv_dict['message_count'] = message_count
+        # 给管理员展示用户名；普通用户返回自己的用户名也无妨
+        conv_dict['username'] = username
         result.append(conv_dict)
     
     return jsonify(result)
