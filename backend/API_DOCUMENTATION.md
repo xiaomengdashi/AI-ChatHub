@@ -116,17 +116,69 @@ chathub/
 
 需要管理员权限。切换模型的启用/禁用状态。
 
-#### 获取模型提供商列表
-**GET** `/api/models/providers`
-
-获取所有激活模型的提供商列表。
-
 #### 批量更新模型排序
 **POST** `/api/models/batch-update-order`
 
 需要管理员权限。批量更新模型的排序顺序。
 
-### 3. 用户认证
+### 3. 提供商管理
+
+#### 获取提供商列表
+**GET** `/api/providers`
+
+需要认证。获取所有启用的AI模型提供商列表。
+
+**响应示例**:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "provider_key": "openai",
+      "display_name": "OpenAI",
+      "default_base_url": "https://api.openai.com/v1",
+      "is_active": true,
+      "sort_order": 0,
+      "created_at": "2024-01-01T12:00:00Z",
+      "updated_at": "2024-01-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+#### 创建提供商
+**POST** `/api/providers`
+
+需要管理员权限。创建新的模型提供商。
+
+**请求体**:
+```json
+{
+  "provider_key": "custom_provider",
+  "display_name": "自定义提供商",
+  "default_base_url": "https://api.custom.com/v1",
+  "is_active": true,
+  "sort_order": 0
+}
+```
+
+#### 更新提供商
+**PUT** `/api/providers/{provider_id}`
+
+需要管理员权限。更新指定提供商的信息。
+
+#### 删除提供商
+**DELETE** `/api/providers/{provider_id}`
+
+需要管理员权限。删除指定提供商（软删除，设置为不活跃状态）。
+
+#### 获取单个提供商
+**GET** `/api/providers/{provider_id}`
+
+需要认证。获取指定提供商的详细信息。
+
+### 4. 用户认证
 
 #### 登录
 **POST** `/api/auth/login`
@@ -184,7 +236,7 @@ chathub/
 
 需要认证。用户登出。
 
-### 4. 聊天功能
+### 5. 聊天功能
 
 #### 发送消息
 **POST** `/api/chat`
@@ -226,7 +278,7 @@ chathub/
 }
 ```
 
-### 5. 对话管理
+### 6. 对话管理
 
 #### 获取对话列表
 **GET** `/api/conversations`
@@ -255,7 +307,7 @@ chathub/
 
 需要认证。删除指定对话。
 
-### 6. API密钥管理
+### 7. API密钥管理
 
 #### 保存API密钥
 **POST** `/api/apikeys`
@@ -291,13 +343,13 @@ chathub/
 
 需要认证。切换API密钥的启用/禁用状态。
 
-### 7. 统计信息
+### 8. 统计信息
 
 **GET** `/api/stats`
 
 需要认证。获取用户的使用统计信息。
 
-### 8. 用户管理
+### 9. 用户管理
 
 #### 获取用户列表
 **GET** `/api/users`

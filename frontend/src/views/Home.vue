@@ -80,8 +80,6 @@
                 <span v-else>维护中</span>
               </div>
             </div>
-            
-
           </div>
         </div>
         
@@ -105,8 +103,6 @@ import {
   BarChartOutlined,
   LockOutlined,
   DollarOutlined,
-  ThunderboltOutlined,
-  EyeOutlined,
   RobotOutlined,
   CloudOutlined,
   ExperimentOutlined,
@@ -123,8 +119,6 @@ export default {
     BarChartOutlined,
     LockOutlined,
     DollarOutlined,
-    ThunderboltOutlined,
-    EyeOutlined,
     RobotOutlined,
     CloudOutlined,
     ExperimentOutlined,
@@ -171,6 +165,7 @@ export default {
         }
       ],
       allModels: [],
+      providers: [],
       modelsLoading: false
     }
   },
@@ -190,6 +185,7 @@ export default {
   async mounted() {
     if (this.isLoggedIn) {
       await this.loadModels()
+      await this.loadProviders()
     }
   },
   methods: {
@@ -206,71 +202,47 @@ export default {
       }
     },
     
-    getProviderIcon(provider) {
-      const iconMap = {
-        'openai': 'BulbOutlined',
-        'anthropic': 'RobotOutlined',
-        'google': 'CloudOutlined',
-        'qwen': 'StarOutlined',
-        'baidu': 'ExperimentOutlined',
-        'alibaba': 'CloudOutlined',
-        'zhipu': 'StarOutlined',
-        'meta': 'RobotOutlined',
-        'siliconflow': 'CloudOutlined',
-        'deepseek': 'BulbOutlined',
-        'moonshot': 'StarOutlined'
+    async loadProviders() {
+      try {
+        const response = await request.get('/api/providers')
+        if (response.data.success) {
+          this.providers = response.data.data
+        } else {
+          console.error('获取提供商列表失败:', response.data.message)
+        }
+      } catch (error) {
+        console.error('加载提供商列表失败:', error)
       }
-      return iconMap[provider] || 'RobotOutlined'
+    },
+    
+    getProviderIcon(provider) {
+      const icons = [
+        'RobotOutlined',
+        'BulbOutlined',
+        'CloudOutlined',
+        'StarOutlined',
+        'ExperimentOutlined',
+        'ApiOutlined',
+        'AppstoreOutlined'
+      ]
+      
+      // 基于provider字符串生成一个稳定的随机索引
+      let hash = 0
+      for (let i = 0; i < provider.length; i++) {
+        const char = provider.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash // 转换为32位整数
+      }
+      
+      const index = Math.abs(hash) % icons.length
+      return icons[index]
     },
     
     getProviderName(provider) {
-      const nameMap = {
-        'openai': 'OpenAI',
-        'anthropic': 'Anthropic',
-        'google': 'Google',
-        'qwen': '通义千问',
-        'baidu': '百度',
-        'alibaba': '阿里巴巴',
-        'zhipu': '智谱AI',
-        'meta': 'Meta',
-        'siliconflow': '硅基流动',
-        'deepseek': 'DeepSeek',
-        'moonshot': '月之暗面'
+      const providerData = this.providers.find(p => p.provider_key === provider)
+      if (providerData && providerData.display_name) {
+        return providerData.display_name
       }
-      return nameMap[provider] || provider
-    },
-    
-    formatTokens(tokens) {
-      if (tokens >= 1000000) {
-        return `${(tokens / 1000000).toFixed(1)}M`
-      } else if (tokens >= 1000) {
-        return `${(tokens / 1000).toFixed(0)}K`
-      }
-      return tokens.toString()
-    },
-    
-    startChatWithModel(model) {
-      // 跳转到聊天页面并选择指定模型
-      this.$router.push({
-        path: '/chat',
-        query: { model: model.model_name }
-      })
-    },
-    
-    viewModelDetails(model) {
-      // 显示模型详情弹窗
-      this.$modal.info({
-        title: `${model.display_name} 详细信息`,
-        width: 600,
-        content: h => h('div', [
-          h('p', `模型名称: ${model.model_name}`),
-          h('p', `提供商: ${this.getProviderName(model.model_provider)}`),
-          h('p', `最大上下文: ${this.formatTokens(model.max_tokens)} tokens`),
-          h('p', `输入价格: ¥${(model.input_price_per_1k * 1000).toFixed(3)}/1K tokens`),
-          h('p', `输出价格: ¥${(model.output_price_per_1k * 1000).toFixed(3)}/1K tokens`),
-          h('p', `描述: ${model.description}`)
-        ])
-      })
     }
   }
 }
@@ -492,7 +464,7 @@ export default {
   pointer-events: none;
 }
 
-/* 使用全局 container 样式 */
+
 
 .section-title {
   text-align: center;
@@ -691,13 +663,6 @@ export default {
 .model-status:not(.active) {
   background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
   color: white;
-}
-
-.model-description {
-  color: #4a5568;
-  margin-bottom: 12px;
-  line-height: 1.6;
-  font-size: 0.95rem;
 }
 
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from datetime import datetime
-from models.models import db, Model
+from models.models import db, Model, Provider
 from utils.auth import admin_required
 from utils.constants import DEFAULT_API_PROVIDER
 
@@ -147,32 +147,7 @@ def toggle_model(current_user, model_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-@models_bp.route('/api/models/providers', methods=['GET'])
-def get_providers():
-    try:
-        # 提供商显示名称映射
-        provider_display_map = {
-            'openai': 'OpenAI',
-            'anthropic': 'Anthropic',
-            'google': 'Google',
-            'baidu': '百度',
-            'alibaba': '阿里巴巴',
-            'zhipu': '智谱AI',
-            'meta': 'Meta',
-            'siliconflow': '硅基流动',
-            'deepseek': 'DeepSeek',
-            'moonshot': '月之暗面',
-            'qwen': '通义千问'
-        }
-        
-        provider_list = [
-            { 'provider': key, 'display_name': value }
-            for key, value in provider_display_map.items()
-        ]
-        
-        return jsonify(provider_list)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+
 
 @models_bp.route('/api/models/batch-update-order', methods=['POST'])
 @admin_required

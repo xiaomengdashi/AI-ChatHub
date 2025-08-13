@@ -12,7 +12,7 @@
           <a-col :span="8">
             <a-form-item label="模型平台" name="model_provider">
               <a-select v-model:value="newKey.model_provider" placeholder="选择模型平台" style="width: 100%">
-                <a-select-option v-for="p in providers" :key="p.provider" :value="p.provider">
+                <a-select-option v-for="p in providers" :key="p.provider_key" :value="p.provider_key">
                   {{ p.display_name }}
                 </a-select-option>
               </a-select>
@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import request from '../utils/request'
@@ -163,8 +163,12 @@ export default {
     const providers = ref([])
     const loadProviders = async () => {
       try {
-        const response = await request.get('/api/models/providers')
-        providers.value = Array.isArray(response.data) ? response.data : []
+        const response = await request.get('/api/providers')
+        if (response.data.success) {
+          providers.value = Array.isArray(response.data.data) ? response.data.data : []
+        } else {
+          message.error(response.data.message || '加载模型平台失败', 2)
+        }
       } catch (error) {
         console.error('加载模型平台失败:', error)
         message.error('加载模型平台失败: ' + (error.response?.data?.error || error.message), 2)
@@ -183,6 +187,26 @@ export default {
       model_provider: '',
       api_key: '',
       base_url: ''
+    })
+
+    // 监听模型平台选择变化，自动填充默认Base URL
+    watch(() => newKey.model_provider, (newProvider) => {
+      if (newProvider) {
+        const provider = providers.value.find(p => p.provider_key === newProvider)
+        if (provider && provider.default_base_url) {
+          newKey.base_url = provider.default_base_url
+        }
+      }
+    })
+
+    // 监听编辑对话框中的模型平台变化
+    watch(() => editingKey.model_provider, (newProvider) => {
+      if (newProvider) {
+        const provider = providers.value.find(p => p.provider_key === newProvider)
+        if (provider && provider.default_base_url) {
+          editingKey.base_url = provider.default_base_url
+        }
+      }
     })
 
     // 掩码显示API Key（仅显示前10位）
@@ -318,41 +342,18 @@ export default {
 
     // 获取模型显示名称
     const getModelDisplayName = (modelName) => {
-      const hit = providers.value.find(p => p.provider === modelName)
-      if (hit) return hit.display_name
-      // 兜底映射，防止 providers 尚未加载完成
-      const fallback = {
-        'openai': 'OpenAI',
-        'anthropic': 'Anthropic',
-        'google': 'Google',
-        'baidu': '百度',
-        'alibaba': '阿里巴巴',
-        'zhipu': '智谱AI',
-        'meta': 'Meta',
-        'siliconflow': '硅基流动',
-        'deepseek': 'DeepSeek',
-        'moonshot': '月之暗面',
-        'qwen': '通义千问'
-      }
-      return fallback[modelName] || modelName
+      const hit = providers.value.find(p => p.provider_key === modelName)
+      return hit ? hit.display_name : modelName
     }
 
     // 获取模型标签颜色
     const getModelTagColor = (modelName) => {
-      const colorMap = {
-        'openai': 'green',
-        'anthropic': 'orange',
-        'google': 'blue',
-        'baidu': 'purple',
-        'alibaba': 'magenta',
-        'zhipu': 'geekblue',
-        'meta': 'volcano',
-        'siliconflow': 'cyan',
-        'deepseek': 'lime',
-        'moonshot': 'gold',
-        'qwen': 'red'
+      const colors = ['blue', 'green', 'orange', 'purple', 'magenta', 'geekblue', 'volcano', 'cyan', 'lime', 'gold', 'red']
+      let hash = 0
+      for (let i = 0; i < modelName.length; i++) {
+        hash = modelName.charCodeAt(i) + ((hash << 5) - hash)
       }
-      return colorMap[modelName] || 'default'
+      return colors[Math.abs(hash) % colors.length]
     }
 
     // 格式化日期

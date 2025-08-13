@@ -113,17 +113,72 @@ class ApiKey(db.Model):
     
     def to_dict(self):
         from utils.time_utils import to_beijing_iso
+        default_base = Model.get_default_base_url(self.model_provider) if self.model_provider else ''
+        effective_base = self.base_url or default_base
         return {
             'id': self.id,
             'model_provider': self.model_provider,
             'api_key': self.api_key,
             'base_url': self.base_url,
+            'default_base_url': default_base,
+            'effective_base_url': effective_base,
             'is_active': self.is_active,
             'created_at': to_beijing_iso(self.created_at),
             'updated_at': to_beijing_iso(self.updated_at)
         }
 
+class Provider(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    provider_key = db.Column(db.String(100), unique=True, nullable=False)  # 提供商标识，如 openai, anthropic
+    display_name = db.Column(db.String(100), nullable=False)  # 显示名称，如 OpenAI, Anthropic
+    default_base_url = db.Column(db.String(500), nullable=False)  # 默认API地址
+    is_active = db.Column(db.Boolean, default=True)  # 是否启用
+    sort_order = db.Column(db.Integer, default=0)  # 排序顺序
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def to_dict(self):
+        from utils.time_utils import to_beijing_iso
+        return {
+            'id': self.id,
+            'provider_key': self.provider_key,
+            'display_name': self.display_name,
+            'default_base_url': self.default_base_url,
+            'is_active': self.is_active,
+            'sort_order': self.sort_order,
+            'created_at': to_beijing_iso(self.created_at),
+            'updated_at': to_beijing_iso(self.updated_at)
+        }
+    
+    @classmethod
+    def get_provider_by_key(cls, provider_key):
+        """根据提供商标识获取提供商信息"""
+        return cls.query.filter_by(provider_key=provider_key, is_active=True).first()
+    
+    @classmethod
+    def get_all_active_providers(cls):
+        """获取所有启用的提供商"""
+        return cls.query.filter_by(is_active=True).order_by(cls.sort_order, cls.id).all()
+
 class Model(db.Model):
+    # 为了向后兼容，保留原有的属性访问方式
+    @classmethod
+    def get_provider_display_name(cls, provider):
+        """获取提供商显示名称"""
+        provider_obj = Provider.get_provider_by_key(provider)
+        return provider_obj.display_name if provider_obj else provider
+    
+    @classmethod
+    def get_provider_info(cls, provider):
+        """获取提供商完整信息"""
+        provider_obj = Provider.get_provider_by_key(provider)
+        if provider_obj:
+            return {
+                'display_name': provider_obj.display_name,
+                'default_base_url': provider_obj.default_base_url
+            }
+        return {}
+    
     id = db.Column(db.Integer, primary_key=True)
     model_name = db.Column(db.String(100), nullable=False)  # 模型名称，如 gpt-4, claude-3-sonnet
     display_name = db.Column(db.String(100), nullable=False)  # 显示名称，如 GPT-4, Claude-3 Sonnet
@@ -140,6 +195,12 @@ class Model(db.Model):
     sort_order = db.Column(db.Integer, default=0)  # 排序顺序
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    @classmethod
+    def get_default_base_url(cls, provider):
+        """根据提供商获取默认 Base URL"""
+        provider_obj = Provider.get_provider_by_key(provider)
+        return provider_obj.default_base_url if provider_obj else ''
     
     def to_dict(self):
         from utils.time_utils import to_beijing_iso
@@ -158,6 +219,7 @@ class Model(db.Model):
             'description': self.description,
             'is_active': self.is_active,
             'sort_order': self.sort_order,
+            'default_base_url': self.get_default_base_url(self.model_provider),
             'created_at': to_beijing_iso(self.created_at),
             'updated_at': to_beijing_iso(self.updated_at)
         }

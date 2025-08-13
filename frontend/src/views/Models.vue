@@ -28,17 +28,13 @@
           <a-col :span="6">
             <a-form-item label="模型提供商" name="model_provider">
               <a-select v-model:value="newModel.model_provider" placeholder="选择提供商" style="width: 100%">
-                <a-select-option value="openai">OpenAI</a-select-option>
-                <a-select-option value="anthropic">Anthropic</a-select-option>
-                <a-select-option value="google">Google</a-select-option>
-                <a-select-option value="baidu">百度</a-select-option>
-                <a-select-option value="alibaba">阿里巴巴</a-select-option>
-                <a-select-option value="zhipu">智谱AI</a-select-option>
-                <a-select-option value="meta">Meta</a-select-option>
-                <a-select-option value="siliconflow">硅基流动</a-select-option>
-                <a-select-option value="deepseek">DeepSeek</a-select-option>
-                <a-select-option value="moonshot">月之暗面</a-select-option>
-                <a-select-option value="other">其他</a-select-option>
+                <a-select-option 
+                  v-for="provider in providers" 
+                  :key="provider.provider_key" 
+                  :value="provider.provider_key"
+                >
+                  {{ provider.display_name }}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -163,8 +159,8 @@
             <a-select-option value="">全部提供商</a-select-option>
             <a-select-option 
               v-for="provider in providers" 
-              :key="provider.provider" 
-              :value="provider.provider"
+              :key="provider.provider_key" 
+              :value="provider.provider_key"
             >
               {{ provider.display_name }}
             </a-select-option>
@@ -275,17 +271,13 @@
           <a-col :span="12">
             <a-form-item label="模型提供商">
               <a-select v-model:value="editingModel.model_provider" style="width: 100%">
-                <a-select-option value="openai">OpenAI</a-select-option>
-                <a-select-option value="anthropic">Anthropic</a-select-option>
-                <a-select-option value="google">Google</a-select-option>
-                <a-select-option value="baidu">百度</a-select-option>
-                <a-select-option value="alibaba">阿里巴巴</a-select-option>
-                <a-select-option value="zhipu">智谱AI</a-select-option>
-                <a-select-option value="meta">Meta</a-select-option>
-                <a-select-option value="siliconflow">硅基流动</a-select-option>
-                <a-select-option value="deepseek">DeepSeek</a-select-option>
-                <a-select-option value="moonshot">月之暗面</a-select-option>
-                <a-select-option value="other">其他</a-select-option>
+                <a-select-option 
+                  v-for="provider in providers" 
+                  :key="provider.provider_key" 
+                  :value="provider.provider_key"
+                >
+                  {{ provider.display_name }}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -470,8 +462,12 @@ export default {
     // 加载提供商列表
     const loadProviders = async () => {
       try {
-        const response = await request.get('/api/models/providers')
-        providers.value = response.data
+        const response = await request.get('/api/providers')
+        if (response.data.success) {
+          providers.value = response.data.data
+        } else {
+          console.error('加载提供商列表失败:', response.data.message)
+        }
       } catch (error) {
         console.error('加载提供商列表失败:', error)
       }
@@ -579,37 +575,19 @@ export default {
 
     // 获取提供商标签颜色
     const getProviderTagColor = (provider) => {
-      const colorMap = {
-        'openai': 'green',
-        'anthropic': 'orange',
-        'google': 'blue',
-        'baidu': 'red',
-        'alibaba': 'cyan',
-        'zhipu': 'purple',
-        'meta': 'blue',
-        'siliconflow': 'green',
-        'deepseek': 'geekblue',
-        'moonshot': 'magenta'
+      const colors = ['blue', 'green', 'orange', 'purple', 'magenta', 'geekblue', 'volcano', 'cyan', 'lime', 'gold', 'red']
+      // 基于提供商名称生成稳定的颜色索引
+      let hash = 0
+      for (let i = 0; i < provider.length; i++) {
+        hash = provider.charCodeAt(i) + ((hash << 5) - hash)
       }
-      return colorMap[provider] || 'default'
+      return colors[Math.abs(hash) % colors.length]
     }
 
     // 获取提供商显示名称
     const getProviderDisplayName = (provider) => {
-      const providerMap = {
-        'openai': 'OpenAI',
-        'anthropic': 'Anthropic',
-        'google': 'Google',
-        'baidu': '百度',
-        'alibaba': '阿里巴巴',
-        'zhipu': '智谱AI',
-        'meta': 'Meta',
-        'siliconflow': '硅基流动',
-        'deepseek': 'DeepSeek',
-        'moonshot': '月之暗面',
-        'other': '其他'
-      }
-      return providerMap[provider] || provider
+      const providerObj = providers.value.find(p => p.provider_key === provider)
+      return providerObj ? providerObj.display_name : provider
     }
 
     // 获取类型标签颜色

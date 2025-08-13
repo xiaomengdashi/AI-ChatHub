@@ -9,6 +9,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import UserManagement from '../views/UserManagement.vue'
 import ConversationDetail from '../views/ConversationDetail.vue'
+import Providers from '../views/Providers.vue'
 
 
 // 检查用户是否已登录
@@ -81,6 +82,12 @@ const routes = [
     path: '/users',
     name: 'UserManagement',
     component: UserManagement,
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/providers',
+    name: 'Providers',
+    component: Providers,
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {

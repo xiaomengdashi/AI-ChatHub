@@ -9,6 +9,7 @@ import 'prismjs/components/prism-typescript'
 import 'prismjs/components/prism-python'
 import 'prismjs/components/prism-java'
 import 'prismjs/components/prism-c'
+import 'prismjs/components/prism-cpp'
 import 'prismjs/components/prism-csharp'
 import 'prismjs/components/prism-ruby'
 import 'prismjs/components/prism-go'
@@ -34,7 +35,11 @@ const languageAliases = {
   'svg': 'markup',
   'vue': 'markup',
   'jsx': 'javascript',
-  'tsx': 'typescript'
+  'tsx': 'typescript',
+  'hpp': 'cpp',
+  'c++': 'cpp',
+  'cxx': 'cpp',
+  'cc': 'cpp'
 }
 
 // 创建 markdown 实例

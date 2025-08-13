@@ -16,7 +16,8 @@ from routes.conversations import conversations_bp
 from routes.apikeys import apikeys_bp
 from routes.misc import misc_bp
 from routes.users import users_bp
-from routes.models import models_bp
+from routes.ai_models import models_bp
+from routes.providers import providers_bp
 
 # 导入工具
 from sqlalchemy import inspect, text
@@ -45,6 +46,7 @@ def create_app():
     app.register_blueprint(misc_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(models_bp)
+    app.register_blueprint(providers_bp)
     
     return app
 

@@ -19,6 +19,7 @@
             <a-menu-item v-if="isLoggedIn" key="/chat">聊天</a-menu-item>
             <a-menu-item key="/pricing">价格</a-menu-item>
             <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/dashboard">控制台</a-menu-item>
+            <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/providers">模型平台</a-menu-item>
             <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/api-keys">API密钥</a-menu-item>
             <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/models">大模型管理</a-menu-item>
             <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/users">用户管理</a-menu-item>

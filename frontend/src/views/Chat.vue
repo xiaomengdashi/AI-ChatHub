@@ -25,7 +25,7 @@
           >
             <div class="conversation-title">{{ conversation.title }}</div>
             <div class="conversation-meta">
-              <a-tag class="model-tag" color="blue">{{ conversation.model }}</a-tag>
+              <a-tag class="model-tag" color="blue">{{ getModelDisplayNameWithProvider(conversation.model) }}</a-tag>
               <span class="time">{{ formatTime(conversation.updated_at) }}</span>
             </div>
             <a-popconfirm
@@ -224,6 +224,7 @@ export default {
       selectedModel: '',
       previousModel: '', // 用于跟踪之前选择的模型
       availableModels: [],
+      providers: [], // 提供商列表
       inputMessage: '',
       isLoading: false,
       userId: null,
@@ -236,6 +237,7 @@ export default {
   },
   async mounted() {
     await this.loadModels()
+    await this.loadProviders()
     await this.loadConversations()
     
     // 检查URL参数中是否有conversation参数
@@ -279,6 +281,19 @@ export default {
         this.conversations = response.data
       } catch (error) {
         console.error('加载对话列表失败:', error)
+      }
+    },
+    
+    async loadProviders() {
+      try {
+        const response = await request.get('/api/providers')
+        if (response.data.success) {
+          this.providers = response.data.data
+        } else {
+          console.error('获取提供商列表失败:', response.data.message)
+        }
+      } catch (error) {
+        console.error('加载提供商列表失败:', error)
       }
     },
     
@@ -633,25 +648,25 @@ export default {
     },
     
     getProviderDisplayName(provider) {
-      const providerMap = {
-        'openai': 'OpenAI',
-        'anthropic': 'Anthropic',
-        'google': 'Google',
-        'baidu': '百度',
-        'alibaba': '阿里巴巴',
-        'zhipu': '智谱AI',
-        'meta': 'Meta',
-        'siliconflow': '硅基流动',
-        'deepseek': 'DeepSeek',
-        'moonshot': '月之暗面',
-        'qwen': '通义千问'
+      // 从后端获取的providers数据中查找显示名称
+      const providerData = this.providers.find(p => p.provider_key === provider)
+      if (providerData && providerData.display_name) {
+        return providerData.display_name
       }
-      return providerMap[provider] || provider
     },
     
     getModelDisplayName(modelName) {
       const model = this.availableModels.find(m => m.model_name === modelName)
       return model ? model.display_name : modelName
+    },
+    
+    getModelDisplayNameWithProvider(modelName) {
+      const model = this.availableModels.find(m => m.model_name === modelName)
+      if (model) {
+        const providerName = this.getProviderDisplayName(model.model_provider)
+        return `${model.display_name} | ${providerName}`
+      }
+      return modelName
     }
   }
 }
