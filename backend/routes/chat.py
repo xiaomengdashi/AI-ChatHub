@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify, Response, current_app
 import uuid
 import json
 from datetime import datetime
-from models.models import db, Conversation, Message, ApiKey
+from models.models import db, Conversation, Message, ApiKey, Model
 from utils.auth import token_required
-from utils.ai_client import AIClient
+from ai import AIClient
 from utils.constants import DEFAULT_API_PROVIDER
 
 chat_bp = Blueprint('chat', __name__)
@@ -12,6 +12,25 @@ chat_bp = Blueprint('chat', __name__)
 def get_active_api_key(provider=DEFAULT_API_PROVIDER):
     """获取活跃的API密钥"""
     return ApiKey.query.filter_by(model_provider=provider, is_active=True).first()
+
+def get_model_provider(model_name):
+    """根据模型名称获取提供商"""
+    model = Model.query.filter_by(model_name=model_name, is_active=True).first()
+    if model:
+        return model.model_provider
+    # 如果数据库中没有找到，尝试根据模型名称推断
+    if 'gpt' in model_name.lower() or 'openai' in model_name.lower():
+        return 'openai'
+    elif 'claude' in model_name.lower() or 'anthropic' in model_name.lower():
+        return 'anthropic'
+    elif 'ernie' in model_name.lower() or 'baidu' in model_name.lower():
+        return 'baidu'
+    elif 'qwen' in model_name.lower() or 'alibaba' in model_name.lower():
+        return 'alibaba'
+    elif 'glm' in model_name.lower() or 'zhipu' in model_name.lower():
+        return 'zhipu'
+    else:
+        return 'siliconflow'  # 默认使用 siliconflow
 
 @chat_bp.route('/api/chat', methods=['POST'])
 @token_required
@@ -51,13 +70,14 @@ def chat(current_user):
         db.session.add(user_message)
         
         # 统一的模型API调用逻辑
-        # 尝试查找对应的API密钥（优先查找siliconflow）
-        api_key_record = get_active_api_key()
+        # 根据模型获取对应的提供商
+        provider = get_model_provider(model)
+        api_key_record = get_active_api_key(provider)
         
         if api_key_record and api_key_record.api_key:
-            ai_response = AIClient.call_siliconflow_api(model, message, api_key_record.api_key)
+            ai_response = AIClient.call_ai_api(provider, model, message, api_key_record)
         else:
-            ai_response = "请先在API密钥管理中配置相应的API密钥。"
+            ai_response = f"请先在API密钥管理中配置 {provider} 平台的API密钥。"
         
         # 保存AI响应（无推理流的模型仅保存内容）
         ai_message = Message(
@@ -131,11 +151,12 @@ def chat_stream(current_user):
                 yield f"data: {json.dumps({'type': 'start', 'conversation_id': conversation_id})}\n\n"
                 
                 # 统一的流式模型API调用逻辑
-                api_key_record = get_active_api_key()
+                provider = get_model_provider(model)
+                api_key_record = get_active_api_key(provider)
                 
                 if api_key_record and api_key_record.api_key:
                     # 获取流式响应
-                    stream_response = AIClient.call_siliconflow_api_stream(model, message, api_key_record.api_key)
+                    stream_response = AIClient.call_ai_api(provider, model, message, api_key_record, stream=True)
                     
                     if stream_response:
                         complete_response = ""
@@ -180,7 +201,7 @@ def chat_stream(current_user):
                         error_msg = "流式API调用失败"
                         yield f"data: {json.dumps({'type': 'error', 'content': error_msg})}\n\n"
                 else:
-                    error_msg = "请先在API密钥管理中配置相应的API密钥。"
+                    error_msg = f"请先在API密钥管理中配置 {provider} 平台的API密钥。"
                     yield f"data: {json.dumps({'type': 'error', 'content': error_msg})}\n\n"
                     
             except Exception as e:
