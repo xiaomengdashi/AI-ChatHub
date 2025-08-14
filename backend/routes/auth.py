@@ -5,20 +5,25 @@ import uuid
 from models.models import User, db
 from utils.auth import token_required, admin_required
 from models.config import Config
+from utils.email_verification import get_email_verifier
+import logging
+
+logger = logging.getLogger(__name__)
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/api/auth/register', methods=['POST'])
 def register():
-    """普通用户注册"""
+    """普通用户注册（需要邮箱验证码）"""
     try:
         data = request.get_json()
         username = data.get('username')
         email = data.get('email')
         password = data.get('password')
+        verification_code = data.get('verification_code')
         
-        if not username or not email or not password:
-            return jsonify({'error': '用户名、邮箱和密码不能为空'}), 400
+        if not username or not email or not password or not verification_code:
+            return jsonify({'error': '用户名、邮箱、密码和验证码不能为空'}), 400
         
         # 验证用户名长度
         if len(username) < 3 or len(username) > 20:
@@ -36,7 +41,20 @@ def register():
         if User.email_exists(email):
             return jsonify({'error': '邮箱已存在'}), 400
         
-        # 创建新用户（普通用户角色）
+        # 验证邮箱验证码
+        try:
+            email_verifier = get_email_verifier()
+            code_valid, code_message = email_verifier.verify_code(email, verification_code)
+            
+            if not code_valid:
+                logger.warning(f"Registration failed for {email}: {code_message}")
+                return jsonify({'error': code_message}), 400
+                
+        except ValueError as e:
+            logger.error(f"Email verifier configuration error during registration: {str(e)}")
+            return jsonify({'error': '邮箱服务配置错误，请联系管理员'}), 500
+        
+        # 创建新用户（普通用户角色，邮箱已验证）
         new_user = User(
             username=username,
             email=email,
@@ -45,7 +63,8 @@ def register():
             subscription_type='free',
             usage_count=0,
             usage_limit=100,
-            is_active=True
+            is_active=True,
+            email_verified=True  # 注册时已验证邮箱
         )
         new_user.set_password(password)
         
@@ -65,6 +84,83 @@ def register():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+@auth_bp.route('/api/auth/send-verification-code', methods=['POST'])
+def send_verification_code():
+    """发送邮箱验证码"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        
+        if not email:
+            return jsonify({'error': '邮箱地址不能为空'}), 400
+        
+        # 验证邮箱格式
+        import re
+        email_regex = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+        if not re.match(email_regex, email):
+            return jsonify({'error': '请输入有效的邮箱地址'}), 400
+        
+        # 检查邮箱是否已被注册
+        if User.email_exists(email):
+            return jsonify({'error': '该邮箱已被注册'}), 400
+        
+        # 发送验证码
+        try:
+            email_verifier = get_email_verifier()
+            success, message = email_verifier.send_verification_code(email)
+            
+            if success:
+                logger.info(f"Verification code sent to {email}")
+                return jsonify({
+                    'success': True,
+                    'message': '验证码已发送到您的邮箱，请查收'
+                })
+            else:
+                logger.warning(f"Failed to send verification code to {email}: {message}")
+                return jsonify({'error': message}), 400
+                
+        except ValueError as e:
+            logger.error(f"Email verifier configuration error: {str(e)}")
+            return jsonify({'error': '邮箱服务配置错误，请联系管理员'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error sending verification code: {str(e)}")
+        return jsonify({'error': '发送验证码失败，请稍后重试'}), 500
+
+@auth_bp.route('/api/auth/verify-email-code', methods=['POST'])
+def verify_email_code():
+    """验证邮箱验证码"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        code = data.get('code')
+        
+        if not email or not code:
+            return jsonify({'error': '邮箱和验证码不能为空'}), 400
+        
+        # 验证验证码
+        try:
+            email_verifier = get_email_verifier()
+            success, message = email_verifier.verify_code(email, code)
+            
+            if success:
+                logger.info(f"Email verification successful for {email}")
+                return jsonify({
+                    'success': True,
+                    'message': message
+                })
+            else:
+                logger.warning(f"Email verification failed for {email}: {message}")
+                return jsonify({'error': message}), 400
+                
+        except ValueError as e:
+            logger.error(f"Email verifier configuration error: {str(e)}")
+            return jsonify({'error': '邮箱服务配置错误，请联系管理员'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error verifying email code: {str(e)}")
+        return jsonify({'error': '验证失败，请稍后重试'}), 500
 
 @auth_bp.route('/api/auth/admin/register', methods=['POST'])
 @admin_required

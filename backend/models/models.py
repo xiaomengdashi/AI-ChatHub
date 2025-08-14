@@ -15,6 +15,7 @@ class User(db.Model):
     usage_count = db.Column(db.Integer, default=0)
     usage_limit = db.Column(db.Integer, default=100)
     is_active = db.Column(db.Boolean, default=True)
+    email_verified = db.Column(db.Boolean, default=False)  # 邮箱是否已验证
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def set_password(self, password):
@@ -56,6 +57,7 @@ class User(db.Model):
             'usage_count': self.usage_count,
             'usage_limit': self.usage_limit,
             'is_active': self.is_active,
+            'email_verified': self.email_verified,
             'created_at': to_beijing_iso(self.created_at)
         }
         if include_sensitive and self.api_key:

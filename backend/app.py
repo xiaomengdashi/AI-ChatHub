@@ -3,6 +3,10 @@ from flask_cors import CORS
 import uuid
 import os
 import sys
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
 
 # 导入配置
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

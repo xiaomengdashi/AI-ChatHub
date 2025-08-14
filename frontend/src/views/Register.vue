@@ -43,6 +43,30 @@
           </a-input>
         </a-form-item>
         
+        <a-form-item name="verificationCode">
+          <a-input-group compact>
+            <a-input
+              v-model:value="registerForm.verificationCode"
+              placeholder="邮箱验证码"
+              size="large"
+              style="width: calc(100% - 120px)"
+            >
+              <template #prefix><SafetyOutlined /></template>
+            </a-input>
+            <a-button 
+              size="large" 
+              style="width: 120px"
+              :disabled="!registerForm.email || sendingCode || countdown > 0"
+              :loading="sendingCode"
+              @click="sendVerificationCode"
+            >
+              <span v-if="countdown > 0">{{ countdown }}s后重发</span>
+              <span v-else-if="sendingCode">发送中...</span>
+              <span v-else>获取验证码</span>
+            </a-button>
+          </a-input-group>
+        </a-form-item>
+        
         <a-form-item name="password">
           <a-input-password
             v-model:value="registerForm.password"
@@ -102,7 +126,8 @@ import {
   CommentOutlined, 
   UserOutlined, 
   LockOutlined, 
-  MailOutlined 
+  MailOutlined,
+  SafetyOutlined 
 } from '@ant-design/icons-vue'
 import request from '../utils/request'
 
@@ -112,11 +137,14 @@ export default {
     CommentOutlined,
     UserOutlined,
     LockOutlined,
-    MailOutlined
+    MailOutlined,
+    SafetyOutlined
   },
   setup() {
     const router = useRouter()
     const loading = ref(false)
+    const sendingCode = ref(false)
+    const countdown = ref(0)
     const registerFormRef = ref()
     
     const registerForm = reactive({
@@ -124,6 +152,7 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
+      verificationCode: '',
       agreement: false
     })
     
@@ -158,6 +187,10 @@ export default {
       email: [
         { validator: validateEmail, trigger: 'blur' }
       ],
+      verificationCode: [
+        { required: true, message: '请输入邮箱验证码', trigger: 'blur' },
+        { len: 6, message: '验证码长度为6位数字', trigger: 'blur' }
+      ],
       password: [
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 6, message: '密码长度至少6个字符', trigger: 'blur' }
@@ -177,6 +210,51 @@ export default {
         }
       ]
     }
+    
+    // 发送验证码
+    const sendVerificationCode = async () => {
+      // 先验证邮箱格式
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!registerForm.email) {
+        message.error('请先输入邮箱地址')
+        return
+      }
+      if (!emailRegex.test(registerForm.email)) {
+        message.error('请输入有效的邮箱地址')
+        return
+      }
+      
+      try {
+        sendingCode.value = true
+        
+        const response = await request.post('/api/auth/send-verification-code', {
+          email: registerForm.email
+        })
+        
+        if (response.data.success) {
+          message.success(response.data.message)
+          
+          // 开始倒计时
+          countdown.value = 60
+          const timer = setInterval(() => {
+            countdown.value--
+            if (countdown.value <= 0) {
+              clearInterval(timer)
+            }
+          }, 1000)
+        } else {
+          message.error(response.data.error || '发送验证码失败')
+        }
+      } catch (error) {
+        if (error.response?.data?.error) {
+          message.error(error.response.data.error)
+        } else {
+          message.error('发送验证码失败，请稍后重试')
+        }
+      } finally {
+        sendingCode.value = false
+      }
+    }
 
     // 处理注册
     const handleRegister = async () => {
@@ -190,7 +268,8 @@ export default {
         const response = await request.post('/api/auth/register', {
           username: registerForm.username,
           email: registerForm.email,
-          password: registerForm.password
+          password: registerForm.password,
+          verification_code: registerForm.verificationCode
         })
         
         if (response.data.success) {
@@ -218,8 +297,11 @@ export default {
       registerForm,
       rules,
       loading,
+      sendingCode,
+      countdown,
       registerFormRef,
-      handleRegister
+      handleRegister,
+      sendVerificationCode
     }
   }
 }

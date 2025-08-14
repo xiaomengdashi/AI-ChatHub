@@ -28,3 +28,13 @@ class Config:
     HOST = '0.0.0.0'
     PORT = 5001
     DEBUG = True
+    
+    # 邮箱配置
+    SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.163.com')
+    SMTP_PORT = int(os.getenv('SMTP_PORT', '465'))
+    SENDER_EMAIL = os.getenv('SENDER_EMAIL', '')
+    SENDER_PASSWORD = os.getenv('SENDER_PASSWORD', '')
+    
+    # 验证码配置
+    VERIFICATION_CODE_EXPIRY = int(os.getenv('VERIFICATION_CODE_EXPIRY', '5'))  # 验证码过期时间（分钟）
+    VERIFICATION_RATE_LIMIT = int(os.getenv('VERIFICATION_RATE_LIMIT', '60'))  # 验证码发送间隔（秒）
