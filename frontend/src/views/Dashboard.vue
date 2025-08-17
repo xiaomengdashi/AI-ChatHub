@@ -73,7 +73,7 @@
                   </template>
                   
                   <div class="usage-content">
-                    <div class="usage-progress">
+                    <div class="usage-progress responsive-progress">
                       <a-progress 
                         :percent="userStats.usage_percentage || 0"
                         :stroke-color="getProgressColor()"
@@ -83,7 +83,7 @@
                     </div>
                     
                     <div class="usage-details">
-                      <div class="usage-item">
+                      <div class="usage-item hover-card">
                         <span class="label">本月使用</span>
                         <span class="value">{{ userStats.monthly_usage || 0 }} tokens</span>
                       </div>

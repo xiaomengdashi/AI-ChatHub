@@ -153,7 +153,7 @@ export default {
       this.loading = true
       try {
         await Promise.all([this.loadConversationMeta(), this.loadMessages()])
-        this.$nextTick(() => this.scrollToBottom())
+        // 移除自动滚动到底部，让用户从顶部开始阅读
       } catch (e) {
         console.error(e)
         message.error('加载对话详情失败')
@@ -243,40 +243,118 @@ export default {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
 }
+
+.header::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 .header-inner {
   max-width: 1100px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 16px 24px;
+  position: relative;
 }
+
 .back-btn {
-  margin-right: 8px;
+  margin-right: 12px;
+  border-radius: 12px;
+  height: 40px;
+  padding: 0 16px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(102, 126, 234, 0.08);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  color: #667eea;
 }
+
+.back-btn:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
 .title-block {
   flex: 1;
-  padding: 0 12px;
+  padding: 0 20px;
+  min-width: 0;
 }
+
 .title {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #2d3748;
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a202c;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+
 .meta {
-  margin-top: 4px;
-  color: #718096;
+  margin-top: 0;
+  color: #64748b;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
-.divider { color: #cbd5e0; }
-.actions { display: flex; gap: 8px; }
+
+.meta :deep(.ant-tag) {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.divider { 
+  color: #cbd5e0;
+  font-weight: 700;
+}
+
+.actions { 
+  display: flex; 
+  gap: 12px;
+}
+
+.actions .ant-btn {
+  border-radius: 12px;
+  height: 40px;
+  padding: 0 20px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.actions .ant-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  color: #667eea;
+}
 
 .content {
   max-width: 1100px;
@@ -321,8 +399,104 @@ export default {
 .empty { text-align: center; padding: 80px 20px; }
 .empty-icon { font-size: 48px; color: #cbd5e0; margin-bottom: 8px; }
 
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .header-inner {
+    max-width: 100%;
+    padding: 12px 20px;
+  }
+  .title {
+    font-size: 1.3rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .messages-wrapper { height: calc(100vh - 180px); }
+  .messages-wrapper { 
+    height: calc(100vh - 180px); 
+  }
+  
+  .header-inner {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .back-btn {
+    margin-right: 4px;
+    padding: 4px 8px;
+  }
+  
+  .title-block {
+    padding: 0 8px;
+    min-width: 0;
+  }
+  
+  .title {
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+  
+  .meta {
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.85rem;
+  }
+  
+  .meta .divider {
+    display: none;
+  }
+  
+  .actions {
+    gap: 6px;
+  }
+  
+  .actions .ant-btn {
+    padding: 4px 8px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-inner {
+    padding: 8px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .back-btn {
+    align-self: flex-start;
+    margin-right: 0;
+  }
+  
+  .title-block {
+    padding: 0;
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  
+  .meta {
+    justify-content: center;
+    font-size: 0.8rem;
+  }
+  
+  .actions {
+    justify-content: center;
+    margin-top: 4px;
+  }
+  
+  .messages-wrapper {
+    height: calc(100vh - 220px);
+    border-radius: 12px;
+  }
+  
+  .content {
+    padding: 12px;
+  }
 }
 
 /* 新增的推理折叠头部样式，复用 Chat.vue 的视觉风格 */

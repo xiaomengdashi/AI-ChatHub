@@ -17,7 +17,7 @@
         :model="registerForm" 
         :rules="rules" 
         ref="registerFormRef" 
-        class="register-form"
+        class="register-form responsive-form"
         @submit.prevent="handleRegister"
         layout="vertical"
       >
@@ -435,18 +435,206 @@ export default {
 }
 
 /* 响应式设计 */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .register-container {
+    padding: 16px;
+  }
+  
   .register-card {
-    margin: 20px;
-    padding: 30px 20px;
+    margin: 0;
+    padding: 32px 24px;
+    max-width: 100%;
+    width: 100%;
+    border-radius: 16px;
+  }
+  
+  .register-header {
+    margin-bottom: 28px;
+  }
+  
+  .logo {
+    gap: 10px;
+    margin-bottom: 12px;
   }
   
   .logo h1 {
-    font-size: 24px;
+    font-size: 26px;
+  }
+  
+  .logo-icon {
+    font-size: 30px;
   }
   
   .subtitle {
     font-size: 14px;
+  }
+  
+  .register-form :deep(.ant-form-item) {
+    margin-bottom: 18px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password) {
+    padding: 12px 16px;
+    font-size: 16px; /* 防止iOS缩放 */
+    border-radius: 10px;
+  }
+  
+  :deep(.ant-select .ant-select-selector) {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+  }
+  
+  .register-button {
+    height: 48px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+  
+  /* 验证码输入组优化 */
+  :deep(.ant-input-group-compact .ant-input) {
+    border-radius: 10px 0 0 10px;
+  }
+  
+  :deep(.ant-input-group-compact .ant-btn) {
+    border-radius: 0 10px 10px 0;
+    font-size: 14px;
+  }
+  
+  /* 复选框优化 */
+  :deep(.ant-checkbox-wrapper) {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 12px;
+  }
+  
+  .register-card {
+    padding: 24px 20px;
+    border-radius: 14px;
+  }
+  
+  .register-header {
+    margin-bottom: 24px;
+  }
+  
+  .logo {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .logo h1 {
+    font-size: 22px;
+  }
+  
+  .logo-icon {
+    font-size: 26px;
+  }
+  
+  .subtitle {
+    font-size: 13px;
+  }
+  
+  .register-form :deep(.ant-form-item) {
+    margin-bottom: 16px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password) {
+    padding: 10px 14px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  :deep(.ant-select .ant-select-selector) {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .register-button {
+    height: 44px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+  
+  /* 验证码输入组在小屏幕上的优化 */
+  :deep(.ant-input-group-compact) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  :deep(.ant-input-group-compact .ant-input) {
+    width: 100% !important;
+    border-radius: 8px;
+  }
+  
+  :deep(.ant-input-group-compact .ant-btn) {
+    width: 100% !important;
+    border-radius: 8px;
+    font-size: 14px;
+    height: 40px;
+  }
+  
+  /* 复选框和链接优化 */
+  :deep(.ant-checkbox-wrapper) {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+  
+  :deep(.ant-checkbox-wrapper a) {
+    font-size: 13px;
+  }
+  
+  .register-footer {
+    padding-top: 16px;
+  }
+  
+  .login-link {
+    font-size: 13px;
+  }
+  
+  /* 表单验证错误信息优化 */
+  :deep(.ant-form-item-explain-error) {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 360px) {
+  .register-card {
+    padding: 20px 16px;
+  }
+  
+  .logo h1 {
+    font-size: 20px;
+  }
+  
+  .logo-icon {
+    font-size: 24px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password) {
+    padding: 8px 12px;
+    font-size: 15px;
+  }
+  
+  .register-button {
+    height: 42px;
+    font-size: 14px;
+  }
+  
+  :deep(.ant-input-group-compact .ant-btn) {
+    height: 38px;
+    font-size: 13px;
   }
 }
 </style>

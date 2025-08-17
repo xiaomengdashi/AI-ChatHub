@@ -23,7 +23,7 @@
       
       <div class="hero-image" v-if="isLoggedIn">
         <div class="floating-cards">
-          <div class="ai-card" v-for="(model, index) in featuredModels" :key="index">
+          <div class="ai-card floating-card" v-for="(model, index) in featuredModels" :key="index">
             <div class="card-icon">🤖</div>
             <div class="card-name">{{ model.name }}</div>
             <div class="card-provider">{{ model.provider }}</div>

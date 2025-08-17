@@ -57,7 +57,15 @@
       <div class="model-pricing">
         <h2 class="section-title">模型定价详情</h2>
         <div class="pricing-table">
-          <a-table :dataSource="modelPricing" :pagination="false" rowKey="id">
+          <ResponsiveTable 
+            :columns="columns"
+            :dataSource="modelPricing" 
+            :pagination="false" 
+            rowKey="id"
+            :mobile-hidden-columns="['description']"
+            :tablet-hidden-columns="[]"
+            :min-scroll-width="800"
+          >
             <a-table-column title="模型名称" dataIndex="name" width="200">
               <template #default="{ record }">
                 <div class="model-name">
@@ -97,7 +105,7 @@
                 </a-tag>
               </template>
             </a-table-column>
-          </a-table>
+          </ResponsiveTable>
         </div>
       </div>
       
@@ -121,11 +129,13 @@
 import request from '@/utils/request'
 import { message } from 'ant-design-vue'
 import { CheckOutlined } from '@ant-design/icons-vue'
+import ResponsiveTable from '@/components/ResponsiveTable.vue'
 
 export default {
   name: 'Pricing',
   components: {
-    CheckOutlined
+    CheckOutlined,
+    ResponsiveTable
   },
   data() {
     return {
@@ -178,6 +188,35 @@ export default {
         }
       ],
       modelPricing: [],
+      columns: [
+        {
+          title: '模型名称',
+          dataIndex: 'name',
+          key: 'name',
+          width: 200,
+          fixed: false
+        },
+        {
+          title: '描述',
+          dataIndex: 'description',
+          key: 'description',
+          fixed: false
+        },
+        {
+          title: '定价信息',
+          dataIndex: 'pricing',
+          key: 'pricing',
+          width: 250,
+          fixed: false
+        },
+        {
+          title: '适用场景',
+          dataIndex: 'tags',
+          key: 'tags',
+          width: 200,
+          fixed: false
+        }
+      ],
       faqs: [
         {
           question: '订阅方案包括什么？',

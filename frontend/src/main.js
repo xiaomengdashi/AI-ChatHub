@@ -5,6 +5,8 @@ import * as AntdIcons from '@ant-design/icons-vue'
 import router from './router'
 import App from './App.vue'
 import './styles/global.css'
+import './styles/form-responsive.css'
+import './styles/media-responsive.css'
 
 const app = createApp(App)
 

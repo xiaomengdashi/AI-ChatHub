@@ -1,0 +1,635 @@
+/* 响应式媒体工具类 */
+
+/* 基础图片响应式 */
+.responsive-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.responsive-img-fluid {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* 图标响应式 */
+.responsive-icon {
+  transition: all 0.3s ease;
+}
+
+.responsive-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Logo 响应式 */
+.logo-responsive {
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.logo-responsive .logo-icon {
+  transition: all 0.3s ease;
+}
+
+.logo-responsive:hover {
+  transform: scale(1.05);
+}
+
+.logo-responsive:hover .logo-icon {
+  transform: rotate(360deg);
+}
+
+/* 渐变文字响应式 */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+/* 备用样式，确保在不支持渐变文字的浏览器中文字可见 */
+@supports not (-webkit-background-clip: text) {
+  .gradient-text {
+    color: #667eea !important;
+    background: none !important;
+  }
+}
+
+/* 进度条响应式 */
+.responsive-progress {
+  margin-bottom: 20px;
+}
+
+.responsive-progress .ant-progress-text {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.responsive-progress .ant-progress-bg {
+  background: #e2e8f0;
+}
+
+/* 卡片悬停效果 */
+.hover-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+/* 浮动动画卡片 */
+.floating-card {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* 滑入动画 */
+.slide-in-left {
+  animation: slideInLeft 1s ease-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 1s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 背景图片响应式 */
+.responsive-bg {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.responsive-bg-contain {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 英雄区域背景 */
+.hero-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+  pointer-events: none;
+}
+
+/* 空状态图标 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8c8c8c;
+}
+
+.empty-state .empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  color: #595959;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* SVG 图标响应式 */
+.svg-icon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  transition: all 0.3s ease;
+}
+
+.svg-icon-sm {
+  width: 14px;
+  height: 14px;
+}
+
+.svg-icon-md {
+  width: 18px;
+  height: 18px;
+}
+
+.svg-icon-lg {
+  width: 24px;
+  height: 24px;
+}
+
+.svg-icon-xl {
+  width: 32px;
+  height: 32px;
+}
+
+/* 平板响应式 (768px 及以下) */
+@media (max-width: 768px) {
+  .logo-responsive {
+    font-size: 20px;
+  }
+  
+  .logo-responsive .logo-icon {
+    font-size: 24px;
+    margin-right: 8px;
+  }
+  
+  .empty-state {
+    padding: 40px 16px;
+  }
+  
+  .empty-state .empty-icon {
+    font-size: 48px;
+  }
+  
+  .empty-state h3 {
+    font-size: 14px;
+  }
+  
+  .empty-state p {
+    font-size: 13px;
+  }
+  
+  .floating-card {
+    animation: none; /* 在移动设备上禁用浮动动画以提高性能 */
+  }
+  
+  .hover-card:hover {
+    transform: none; /* 在触摸设备上禁用悬停效果 */
+  }
+  
+  .svg-icon-xl {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .svg-icon-lg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* 手机响应式 (480px 及以下) */
+@media (max-width: 480px) {
+  .logo-responsive {
+    font-size: 18px;
+  }
+  
+  .logo-responsive .logo-icon {
+    font-size: 20px;
+    margin-right: 6px;
+  }
+  
+  .empty-state {
+    padding: 32px 12px;
+  }
+  
+  .empty-state .empty-icon {
+    font-size: 40px;
+  }
+  
+  .empty-state h3 {
+    font-size: 13px;
+  }
+  
+  .empty-state p {
+    font-size: 12px;
+  }
+  
+  .responsive-progress {
+    margin-bottom: 16px;
+  }
+  
+  .svg-icon-xl {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .svg-icon-lg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .svg-icon-md {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* 超小屏幕 (360px 及以下) */
+@media (max-width: 360px) {
+  .logo-responsive {
+    font-size: 16px;
+  }
+  
+  .logo-responsive .logo-icon {
+    font-size: 18px;
+    margin-right: 4px;
+  }
+  
+  .empty-state {
+    padding: 24px 8px;
+  }
+  
+  .empty-state .empty-icon {
+    font-size: 32px;
+  }
+  
+  .empty-state h3 {
+    font-size: 12px;
+  }
+  
+  .empty-state p {
+    font-size: 11px;
+  }
+  
+  .svg-icon-xl {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .svg-icon-lg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .svg-icon-md {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .svg-icon-sm {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* 高分辨率屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .responsive-img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* 深色模式媒体查询 */
+@media (prefers-color-scheme: dark) {
+  .gradient-text {
+    background: linear-gradient(135deg, #8b9cf7 0%, #9d7cbf 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  @supports not (-webkit-background-clip: text) {
+    .gradient-text {
+      color: #8b9cf7 !important;
+      background: none !important;
+    }
+  }
+  
+  .empty-state {
+    color: #a6a6a6;
+  }
+  
+  .empty-state h3 {
+    color: #d9d9d9;
+  }
+  
+  .empty-state p {
+    color: #a6a6a6;
+  }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .responsive-icon,
+  .logo-responsive,
+  .hover-card,
+  .floating-card,
+  .slide-in-left,
+  .slide-in-right,
+  .slide-up {
+    animation: none;
+    transition: none;
+  }
+  
+  .responsive-icon:hover,
+  .logo-responsive:hover,
+  .logo-responsive:hover .logo-icon,
+  .hover-card:hover {
+    transform: none;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .responsive-img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+  
+  .floating-card,
+  .hover-card {
+    animation: none;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .gradient-text {
+    color: #000 !important;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+  }
+}
+
+/* 可访问性增强 */
+.responsive-img[alt=""] {
+  opacity: 0.7;
+}
+
+.responsive-img:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* 懒加载图片样式 */
+.lazy-img {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lazy-img.loaded {
+  opacity: 1;
+}
+
+.lazy-img.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 图片错误状态 */
+.img-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  color: #999;
+  font-size: 14px;
+  min-height: 100px;
+  border: 1px dashed #d9d9d9;
+  border-radius: 4px;
+}
+
+.img-error::before {
+  content: '🖼️';
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* 视频响应式 */
+.responsive-video {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 宽高比 */
+  overflow: hidden;
+}
+
+.video-container iframe,
+.video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 音频响应式 */
+.responsive-audio {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  .responsive-audio {
+    height: 40px;
+  }
+}
+
+/* 图标按钮响应式 */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.icon-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: scale(1.1);
+}
+
+@media (max-width: 480px) {
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 360px) {
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* 徽章和标签响应式 */
+.responsive-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  line-height: 1.4;
+}
+
+@media (max-width: 480px) {
+  .responsive-tag {
+    font-size: 11px;
+    padding: 1px 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .responsive-tag {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+}
+
+/* 加载骨架屏 */
+.skeleton-img {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 图片网格响应式 */
+.img-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+@media (max-width: 768px) {
+  .img-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .img-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .img-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+}

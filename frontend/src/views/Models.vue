@@ -175,12 +175,14 @@
         </a-space>
       </template>
 
-      <a-table 
+      <ResponsiveTable 
         :data-source="models" 
         :loading="loading" 
         :columns="columns"
         row-key="id"
-        :scroll="{ x: 1500 }"
+        :mobile-hidden-columns="['model_type', 'max_tokens', 'features', 'updated_at']"
+        :tablet-hidden-columns="['max_tokens', 'updated_at']"
+        :min-scroll-width="1500"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'model_info'">
@@ -248,7 +250,7 @@
             </a-space>
           </template>
         </template>
-      </a-table>
+      </ResponsiveTable>
     </a-card>
 
     <!-- 编辑对话框 -->
@@ -378,12 +380,14 @@ import { ref, reactive, onMounted } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import request from '../utils/request'
+import ResponsiveTable from '../components/ResponsiveTable.vue'
 
 export default {
   name: 'Models',
   components: {
     PlusOutlined,
-    ReloadOutlined
+    ReloadOutlined,
+    ResponsiveTable
   },
   setup() {
     const loading = ref(false)
@@ -816,7 +820,7 @@ export default {
 :deep(.ant-input) {
   border-radius: 12px;
   border: 2px solid rgba(102, 126, 234, 0.1);
-  padding: 12px 16px;
+  padding: 8px 12px;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
@@ -893,6 +897,124 @@ export default {
   
   .header h1 {
     font-size: 1.8rem;
+  }
+  
+  .header {
+    margin-bottom: 12px;
+  }
+  
+  :deep(.models-list-card) {
+    margin-bottom: 16px;
+  }
+  
+  :deep(.ant-card-body) {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .models-container {
+    padding: 4px 8px 16px;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .header p {
+    font-size: 1rem;
+  }
+  
+  :deep(.ant-space) {
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+  
+  :deep(.ant-select) {
+    min-width: 120px;
+  }
+  
+  /* 修复选择器文字显示问题 */
+  :deep(.ant-select-selector) {
+    height: auto !important;
+    min-height: 36px !important;
+    padding: 6px 11px !important;
+    line-height: 1.6 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  :deep(.ant-select-selection-item) {
+    line-height: 1.6 !important;
+    padding: 0 !important;
+    height: auto !important;
+    font-size: 14px !important;
+    color: rgba(0, 0, 0, 0.88) !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  :deep(.ant-select-selection-search-input) {
+    height: auto !important;
+    line-height: 1.6 !important;
+    font-size: 14px !important;
+  }
+  
+  :deep(.ant-select-selection-search) {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+  }
+  
+  /* 确保卡片标题在小屏幕下可见 */
+  :deep(.ant-card-head) {
+    display: block !important;
+    padding: 8px 12px !important;
+  }
+  
+  :deep(.ant-card-head-wrapper) {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  :deep(.ant-card-head-title) {
+    display: block !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #262626 !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  
+  :deep(.ant-card-extra) {
+    margin: 0 !important;
+    flex-shrink: 1 !important;
+  }
+  
+  :deep(.ant-card-extra .ant-space) {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+  
+  :deep(.ant-card-extra .ant-space-item) {
+    margin-bottom: 4px !important;
+  }
+  
+  /* 表单三行布局 */
+  :deep(.ant-row) {
+    flex-direction: column;
+  }
+  
+  :deep(.ant-col) {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 8px;
+  }
+  
+  :deep(.ant-form-item) {
+    margin-bottom: 16px;
   }
 }
 </style>

@@ -1,8 +1,15 @@
 <template>
   <div class="chat-container">
     <div class="chat-layout">
+      <!-- 移动端遮罩层 -->
+      <div 
+        class="sidebar-overlay" 
+        :class="{ 'overlay-visible': sidebarVisible }"
+        @click="sidebarVisible = false"
+      ></div>
+      
       <!-- 侧边栏 - 对话列表 -->
-      <div class="sidebar">
+      <div class="sidebar" :class="{ 'sidebar-hidden': !sidebarVisible }">
         <div class="sidebar-header">
           <a-button 
             type="primary" 
@@ -55,6 +62,14 @@
         <!-- 聊天头部 -->
         <div class="chat-header">
           <div class="chat-title">
+            <!-- 移动端侧边栏切换按钮 -->
+            <a-button 
+              class="mobile-sidebar-toggle"
+              type="text"
+              @click="toggleSidebar"
+            >
+              <template #icon><MenuOutlined /></template>
+            </a-button>
             <h3>{{ currentConversationTitle }}</h3>
           </div>
           <div class="header-controls">
@@ -198,7 +213,8 @@ import {
   DownOutlined, 
   DeleteOutlined, 
   PlusOutlined,
-  RightOutlined
+  RightOutlined,
+  MenuOutlined
 } from '@ant-design/icons-vue'
 
 export default {
@@ -213,7 +229,8 @@ export default {
     DownOutlined,
     DeleteOutlined,
     PlusOutlined,
-    RightOutlined
+    RightOutlined,
+    MenuOutlined
   },
   data() {
     return {
@@ -232,7 +249,8 @@ export default {
       hasNewContent: false,
       lastScrollTop: 0,
       currentAbortController: null, // 当前流式请求的控制器
-      currentStreamingConversationId: null // 当前正在流式输出的对话ID
+      currentStreamingConversationId: null, // 当前正在流式输出的对话ID
+      sidebarVisible: window.innerWidth > 768 // 侧边栏显示状态，移动端默认隐藏
     }
   },
   async mounted() {
@@ -306,6 +324,7 @@ export default {
       
       this.currentConversationId = conversationId
       const conversation = this.conversations.find(c => c.conversation_id === conversationId)
+      
       if (conversation) {
         this.currentConversationTitle = conversation.title
         this.selectedModel = conversation.model
@@ -319,6 +338,7 @@ export default {
           ...message,
           reasoningCollapsed: message.reasoning && message.reasoning.trim() ? true : false
         }))
+        
         this.$nextTick(() => {
           this.scrollToBottom()
         })
@@ -333,6 +353,10 @@ export default {
       this.currentConversationTitle = '新对话'
       this.messages = []
       this.inputMessage = ''
+    },
+    
+    toggleSidebar() {
+      this.sidebarVisible = !this.sidebarVisible
     },
     
     async sendMessage() {
@@ -961,6 +985,24 @@ export default {
   gap: 20px;
 }
 
+.mobile-sidebar-toggle {
+  display: none;
+  margin-right: 12px;
+  padding: 4px;
+  border-radius: 6px;
+  color: #667eea;
+}
+
+.mobile-sidebar-toggle:hover {
+  background-color: rgba(102, 126, 234, 0.1);
+  color: #5a67d8;
+}
+
+.chat-title {
+  display: flex;
+  align-items: center;
+}
+
 .model-option {
   display: flex;
   flex-direction: column;
@@ -1375,6 +1417,11 @@ export default {
   font-size: 12px;
 }
 
+/* 遮罩层样式 */
+.sidebar-overlay {
+  display: none;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .chat-container {
@@ -1382,11 +1429,83 @@ export default {
     max-height: calc(100vh - 80px);
   }
   
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 80px);
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  .overlay-visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  
   .sidebar {
+    position: fixed;
+    left: 0;
+    top: 80px;
+    height: calc(100vh - 80px);
     width: 280px;
+    z-index: 1000;
+    transition: transform 0.3s ease;
     box-shadow: 
       6px 0 24px rgba(0, 0, 0, 0.1),
       3px 0 12px rgba(102, 126, 234, 0.08);
+  }
+  
+  .sidebar-hidden {
+    transform: translateX(-100%);
+  }
+  
+  .chat-main {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .chat-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    height: auto;
+  }
+  
+  .mobile-sidebar-toggle {
+    display: inline-flex;
+  }
+  
+  .chat-title {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .chat-title h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    flex: 1;
+  }
+  
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  
+  .model-selector {
+    flex: 1;
+  }
+  
+  .model-selector .ant-select {
+    width: 100% !important;
+    max-width: 200px;
   }
   
   .messages-container {
@@ -1444,6 +1563,38 @@ export default {
     box-shadow: 
       4px 0 16px rgba(0, 0, 0, 0.12),
       2px 0 8px rgba(102, 126, 234, 0.1);
+  }
+  
+  .chat-header {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  
+  .chat-title h3 {
+    font-size: 1rem;
+  }
+  
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .model-selector .ant-select {
+    width: 100% !important;
+    max-width: none;
+  }
+  
+  .model-option {
+    padding: 2px 0;
+  }
+  
+  .model-name {
+    font-size: 0.9rem;
+  }
+  
+  .model-provider {
+    font-size: 0.8rem;
   }
   
   .sidebar-header {

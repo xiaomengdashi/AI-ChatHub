@@ -12,12 +12,15 @@
     </div>
 
     <div class="table-container">
-      <a-table 
+      <ResponsiveTable 
       :columns="columns" 
       :data-source="providers" 
       :loading="loading"
       row-key="id"
       :pagination="{ pageSize: 10 }"
+      :mobile-hidden-columns="['description', 'created_at']"
+      :tablet-hidden-columns="['created_at']"
+      :min-scroll-width="1000"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'is_active'">
@@ -41,7 +44,7 @@
           </a-space>
         </template>
       </template>
-    </a-table>
+    </ResponsiveTable>
     </div>
 
     <!-- 添加/编辑模态框 -->
@@ -105,7 +108,8 @@
 import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import request from '@/utils/request'
+import request from '../utils/request'
+import ResponsiveTable from '../components/ResponsiveTable.vue'
 
 const loading = ref(false)
 const providers = ref([])
@@ -539,13 +543,18 @@ onMounted(() => {
 /* 响应式设计 */
 @media (max-width: 768px) {
   .providers-container {
-    padding: 16px;
+    padding: 16px 12px;
   }
   
   .header {
     flex-direction: column;
+    align-items: flex-start;
     gap: 16px;
-    text-align: center;
+    text-align: left;
+  }
+  
+  .header h2 {
+    font-size: 20px;
   }
   
   .table-container {
@@ -561,6 +570,29 @@ onMounted(() => {
   :deep(.ant-table-thead > tr > th) {
     padding: 12px 8px;
     font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .providers-container {
+    padding: 12px 8px;
+  }
+  
+  .header h2 {
+    font-size: 18px;
+  }
+  
+  .header .ant-btn {
+    width: 100%;
+    justify-self: stretch;
+  }
+  
+  :deep(.ant-modal-body) {
+    padding: 16px;
+  }
+  
+  :deep(.ant-form-item) {
+    margin-bottom: 16px;
   }
 }
 </style>

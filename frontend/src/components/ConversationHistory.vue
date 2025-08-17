@@ -577,14 +577,36 @@ export default {
   padding: 20px;
   border: 1px solid #e2e8f0;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.conversation-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  transition: left 0.5s ease;
 }
 
 .conversation-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border-color: #667eea;
+}
+
+.conversation-card:hover::before {
+  left: 100%;
+}
+
+.conversation-card:active {
+  transform: translateY(-2px);
+  transition: all 0.1s ease;
 }
 
 .card-header {
@@ -688,6 +710,14 @@ export default {
   justify-content: center;
 }
 
+/* 响应式设计优化 */
+@media (max-width: 1200px) {
+  .conversations-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+}
+
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
@@ -712,6 +742,91 @@ export default {
 
   .conversations-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .conversation-card {
+    padding: 16px;
+    border-radius: 8px;
+  }
+  
+  .conversation-title {
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  
+  .conversation-meta {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .time-info {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .arrow-icon {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .conversation-card {
+    padding: 12px;
+    margin: 0 -4px;
+    /* 移动端触摸优化 */
+    -webkit-tap-highlight-color: rgba(102, 126, 234, 0.1);
+    touch-action: manipulation;
+  }
+  
+  .conversation-card:hover {
+    /* 移动端禁用悬停效果 */
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-color: #e2e8f0;
+  }
+  
+  .conversation-card:hover::before {
+    left: -100%;
+  }
+  
+  .conversation-card:active {
+    transform: scale(0.98);
+    background-color: #f8fafc;
+  }
+  
+  .conversation-title {
+    font-size: 0.95rem;
+  }
+  
+  .conversation-meta {
+    gap: 6px;
+  }
+  
+  .message-count {
+    font-size: 0.8rem;
+  }
+  
+  .conversation-preview {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 3;
+  }
+  
+  .time-info {
+    font-size: 0.7rem;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  /* 移动端卡片操作按钮始终可见 */
+  .card-actions {
+    opacity: 1;
   }
 }
 </style>

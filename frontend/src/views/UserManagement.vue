@@ -30,13 +30,16 @@
     </div>
 
     <!-- 用户列表 -->
-    <a-table
+    <ResponsiveTable
       :columns="columns"
       :data-source="users"
       :loading="loading"
       :pagination="pagination"
       @change="handleTableChange"
       row-key="id"
+      :mobile-hidden-columns="['email', 'subscription_type', 'created_at']"
+      :tablet-hidden-columns="['created_at']"
+      :min-scroll-width="1200"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'role'">
@@ -67,7 +70,7 @@
           </a-space>
         </template>
       </template>
-    </a-table>
+    </ResponsiveTable>
 
     <!-- 创建/编辑用户模态框 -->
     <a-modal
@@ -76,12 +79,14 @@
       @ok="handleSubmit"
       @cancel="resetForm"
       :confirm-loading="submitting"
+      class="responsive-modal"
     >
       <a-form
         ref="formRef"
         :model="form"
         :rules="rules"
         layout="vertical"
+        class="responsive-form modal-form"
       >
         <a-form-item label="用户名" name="username">
           <a-input v-model:value="form.username" :disabled="isEditing" />
@@ -125,11 +130,13 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import axios from 'axios'
+import ResponsiveTable from '../components/ResponsiveTable.vue'
 
 export default {
   name: 'UserManagement',
   components: {
-    PlusOutlined
+    PlusOutlined,
+    ResponsiveTable
   },
   setup() {
     const users = ref([])
@@ -476,5 +483,375 @@ export default {
   margin-bottom: 16px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+}
+
+.filters:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+/* 搜索框和选择器样式优化 */
+:deep(.ant-input-search) {
+  display: flex;
+  align-items: stretch;
+}
+
+:deep(.ant-input-search .ant-input) {
+  height: 36px;
+  padding: 6px 11px;
+  border-radius: 6px 0 0 6px;
+}
+
+:deep(.ant-input-search .ant-input-search-button) {
+  height: 36px;
+  border-radius: 0 6px 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 选择器高度统一 */
+:deep(.filters .ant-select .ant-select-selector) {
+  height: 36px;
+  padding: 0 11px;
+  display: flex;
+  align-items: center;
+}
+
+:deep(.filters .ant-select .ant-select-selection-item) {
+  line-height: 1;
+  height: auto;
+  display: flex;
+  align-items: center;
+}
+
+/* 模态框表单响应式优化 */
+:deep(.ant-modal) {
+  max-width: calc(100vw - 32px);
+}
+
+:deep(.ant-modal-content) {
+  border-radius: 12px;
+}
+
+:deep(.ant-modal-header) {
+  border-radius: 12px 12px 0 0;
+  padding: 20px 24px;
+}
+
+:deep(.ant-modal-body) {
+  padding: 24px;
+}
+
+:deep(.ant-modal-footer) {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 表单项优化 */
+:deep(.ant-form-item-label) {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+:deep(.ant-input),
+:deep(.ant-input-password),
+:deep(.ant-select .ant-select-selector),
+:deep(.ant-input-number) {
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+:deep(.ant-input:hover),
+:deep(.ant-input-password:hover),
+:deep(.ant-select .ant-select-selector:hover),
+:deep(.ant-input-number:hover) {
+  border-color: #667eea;
+}
+
+:deep(.ant-input:focus),
+:deep(.ant-input-password:focus),
+:deep(.ant-select-focused .ant-select-selector),
+:deep(.ant-input-number-focused) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 中等屏幕优化 */
+@media (max-width: 1024px) {
+  .filters {
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .filters .ant-input-search {
+    min-width: 250px;
+    flex: 1;
+  }
+  
+  .filters .ant-select {
+    min-width: 100px;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .user-management {
+    padding: 16px 12px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .header h1 {
+    font-size: 20px;
+  }
+  
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .filters .ant-input-search {
+    width: 100% !important;
+    order: 1;
+  }
+  
+  .filters .ant-select {
+    width: 100% !important;
+    margin-left: 0 !important;
+    order: 2;
+  }
+  
+  /* 在平板上添加分隔线效果 */
+  .filters .ant-input-search::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: rgba(102, 126, 234, 0.1);
+    margin: 8px 0;
+  }
+  
+  /* 模态框在平板上的优化 */
+  :deep(.ant-modal) {
+    max-width: calc(100vw - 24px);
+    margin: 12px;
+  }
+  
+  :deep(.ant-modal-header) {
+    padding: 16px 20px;
+  }
+  
+  :deep(.ant-modal-body) {
+    padding: 20px;
+  }
+  
+  :deep(.ant-modal-footer) {
+    padding: 12px 20px;
+  }
+  
+  /* 表单项在平板上的优化 */
+  :deep(.ant-form-item) {
+    margin-bottom: 20px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password),
+  :deep(.ant-select .ant-select-selector),
+  :deep(.ant-input-number) {
+    padding: 10px 12px;
+    font-size: 16px; /* 防止iOS缩放 */
+    height: auto;
+    min-height: 40px;
+    line-height: 1.5;
+  }
+  
+  /* 搜索框在平板上的高度统一 */
+  :deep(.ant-input-search .ant-input) {
+    height: 40px;
+    min-height: 40px;
+    padding: 8px 11px;
+  }
+  
+  :deep(.ant-input-search .ant-input-search-button) {
+    height: 40px;
+    min-height: 40px;
+  }
+  
+  :deep(.ant-select .ant-select-selection-item) {
+    line-height: 1.5;
+    height: auto;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-management {
+    padding: 12px 8px;
+  }
+  
+  .header h1 {
+    font-size: 18px;
+  }
+  
+  .header .ant-btn {
+    width: 100%;
+  }
+  
+  /* 筛选区域在手机上的优化 */
+  .filters {
+    padding: 12px;
+    gap: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .filters .ant-input-search {
+    order: 1;
+  }
+  
+  .filters .ant-select {
+    order: 2;
+  }
+  
+  /* 移除分隔线，在手机上使用更大的间距 */
+  .filters .ant-input-search::after {
+    display: none;
+  }
+  
+  /* 模态框在手机上的优化 */
+  :deep(.ant-modal) {
+    max-width: calc(100vw - 16px);
+    margin: 8px;
+  }
+  
+  :deep(.ant-modal-content) {
+    border-radius: 10px;
+  }
+  
+  :deep(.ant-modal-header) {
+    padding: 14px 16px;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  :deep(.ant-modal-body) {
+    padding: 16px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+  
+  :deep(.ant-modal-footer) {
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  :deep(.ant-modal-footer .ant-btn) {
+    flex: 1;
+    height: 40px;
+    font-size: 14px;
+  }
+  
+  /* 表单项在手机上的优化 */
+  :deep(.ant-form-item) {
+    margin-bottom: 16px;
+  }
+  
+  :deep(.ant-form-item-label) {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password),
+  :deep(.ant-select .ant-select-selector),
+  :deep(.ant-input-number) {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    height: auto;
+    min-height: 36px;
+  }
+  
+  /* 搜索框在手机上的高度统一 */
+  :deep(.ant-input-search .ant-input) {
+    height: 36px;
+    min-height: 36px;
+    padding: 6px 11px;
+  }
+  
+  :deep(.ant-input-search .ant-input-search-button) {
+    height: 36px;
+    min-height: 36px;
+  }
+  
+  /* Switch组件优化 */
+  :deep(.ant-switch) {
+    margin-right: 8px;
+  }
+  
+  /* 表单验证错误信息优化 */
+  :deep(.ant-form-item-explain-error) {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 360px) {
+  /* 筛选区域在超小屏幕的优化 */
+  .filters {
+    padding: 8px;
+    gap: 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+  
+  :deep(.ant-modal) {
+    max-width: calc(100vw - 12px);
+    margin: 6px;
+  }
+  
+  :deep(.ant-modal-header) {
+    padding: 12px 14px;
+  }
+  
+  :deep(.ant-modal-body) {
+    padding: 14px;
+  }
+  
+  :deep(.ant-modal-footer) {
+    padding: 10px 14px;
+  }
+  
+  :deep(.ant-modal-footer .ant-btn) {
+    height: 36px;
+    font-size: 13px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password),
+  :deep(.ant-select .ant-select-selector),
+  :deep(.ant-input-number) {
+    padding: 6px 10px;
+    font-size: 15px;
+  }
 }
 </style>

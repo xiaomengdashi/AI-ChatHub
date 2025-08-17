@@ -4,14 +4,15 @@
       <!-- 顶部导航栏 -->
       <a-layout-header class="app-header">
         <div class="header-content">
-          <div class="logo">
-            <CommentOutlined class="logo-icon" />
+          <div class="logo logo-responsive gradient-text" @click="$router.push('/')">
+            <CommentOutlined class="logo-icon responsive-icon" />
             <span class="logo-text">ChatHub</span>
           </div>
           
+          <!-- 桌面端导航菜单 -->
           <a-menu
             v-model:selectedKeys="selectedKeys"
-            class="nav-menu"
+            class="nav-menu desktop-menu"
             mode="horizontal"
             @click="handleMenuClick"
           >
@@ -25,16 +26,47 @@
             <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/users">用户管理</a-menu-item>
           </a-menu>
           
+          <!-- 移动端汉堡菜单按钮 -->
+          <a-button 
+            class="mobile-menu-btn"
+            type="text"
+            @click="toggleMobileMenu"
+          >
+            <MenuOutlined v-if="!mobileMenuOpen" />
+            <CloseOutlined v-if="mobileMenuOpen" />
+          </a-button>
+          
           <div class="header-actions">
             <template v-if="isLoggedIn">
               <span class="username">{{ username }}</span>
               <a-button @click="logout" type="primary" ghost size="small">退出</a-button>
             </template>
             <template v-else>
-              <a-button @click="$router.push('/register')" type="primary" ghost size="small">注册</a-button>
+              <a-button @click="$router.push('/register')" type="primary" ghost size="small" class="hidden-mobile">注册</a-button>
               <a-button @click="$router.push('/login')" type="primary" size="small">登录</a-button>
             </template>
           </div>
+        </div>
+        
+        <!-- 移动端下拉菜单 -->
+        <div class="mobile-menu" :class="{ 'mobile-menu-open': mobileMenuOpen }">
+          <a-menu
+            v-model:selectedKeys="selectedKeys"
+            class="mobile-nav-menu"
+            mode="vertical"
+            @click="handleMobileMenuClick"
+          >
+            <a-menu-item key="/">首页</a-menu-item>
+            <a-menu-item v-if="isLoggedIn" key="/chat">聊天</a-menu-item>
+            <a-menu-item key="/pricing">价格</a-menu-item>
+            <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/dashboard">控制台</a-menu-item>
+            <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/providers">模型平台</a-menu-item>
+            <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/api-keys">API密钥</a-menu-item>
+            <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/models">大模型管理</a-menu-item>
+            <a-menu-item v-if="isLoggedIn && userRole === 'admin'" key="/users">用户管理</a-menu-item>
+            <a-menu-divider v-if="!isLoggedIn" />
+            <a-menu-item v-if="!isLoggedIn" key="/register" class="mobile-only">注册</a-menu-item>
+          </a-menu>
         </div>
       </a-layout-header>
       
@@ -49,19 +81,22 @@
 </template>
 
 <script>
-import { CommentOutlined } from '@ant-design/icons-vue'
+import { CommentOutlined, MenuOutlined, CloseOutlined } from '@ant-design/icons-vue'
 
 export default {
   name: 'App',
   components: {
-    CommentOutlined
+    CommentOutlined,
+    MenuOutlined,
+    CloseOutlined
   },
   data() {
     return {
       isLoggedIn: false,
       username: '',
       userRole: '',
-      selectedKeys: [this.$route.path]
+      selectedKeys: [this.$route.path],
+      mobileMenuOpen: false
     }
   },
   watch: {
@@ -80,6 +115,13 @@ export default {
    methods: {
      handleMenuClick({ key }) {
        this.$router.push(key)
+     },
+     toggleMobileMenu() {
+       this.mobileMenuOpen = !this.mobileMenuOpen
+     },
+     handleMobileMenuClick({ key }) {
+       this.$router.push(key)
+       this.mobileMenuOpen = false // 点击菜单项后关闭移动端菜单
      },
      checkLoginStatus() {
       const token = localStorage.getItem('token')
@@ -138,16 +180,21 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: 64px;
+  display: block !important;
+  visibility: visible !important;
 }
 
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: space-between;
   height: 100%;
   padding: 0 24px;
+  min-height: 64px;
+  visibility: visible !important;
 }
 
 .logo {
@@ -259,14 +306,107 @@ export default {
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
+/* 移动端汉堡菜单按钮 */
+.mobile-menu-btn {
+  display: none;
+  font-size: 18px;
+  color: #667eea;
+  border: none;
+  background: transparent;
+  transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-btn:hover {
+  color: #764ba2;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+/* 移动端下拉菜单 */
+.mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.mobile-menu-open {
+  max-height: 400px;
+}
+
+.mobile-nav-menu {
+  border: none;
+  background: transparent;
+  padding: 8px 0;
+}
+
+:deep(.mobile-nav-menu .ant-menu-item) {
+  margin: 2px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+:deep(.mobile-nav-menu .ant-menu-item:hover) {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+:deep(.mobile-nav-menu .ant-menu-item-selected) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+}
+
+/* 响应式工具类 */
+.hidden-mobile {
+  display: inline-block;
+}
+
+.mobile-only {
+  display: none;
+}
+
 /* 响应式设计 */
+@media (max-width: 1024px) {
+  .desktop-menu {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+  
+  .header-actions .username {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .desktop-menu {
+    display: flex !important;
+  }
+  
+  .mobile-menu-btn {
+    display: none !important;
+  }
+  
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   .header-content {
     padding: 0 16px;
-  }
-  
-  .nav-menu {
-    margin: 0 20px;
+    position: relative;
   }
   
   .logo {
@@ -278,24 +418,45 @@ export default {
     margin-right: 8px;
   }
   
-
+  .header-actions {
+    gap: 8px;
+  }
+  
+  .header-actions .ant-btn {
+    font-size: 12px;
+    padding: 4px 12px;
+  }
+  
+  .hidden-mobile {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
 }
 
 @media (max-width: 480px) {
   .header-content {
-    flex-wrap: wrap;
-    height: auto;
     padding: 12px 16px;
   }
   
-  .nav-menu {
-    order: 3;
-    width: 100%;
-    margin: 12px 0 0 0;
+  .logo {
+    font-size: 18px;
   }
   
-  :deep(.ant-menu-horizontal) {
-    justify-content: center;
+  .logo-icon {
+    font-size: 20px;
+    margin-right: 6px;
+  }
+  
+  .header-actions {
+    gap: 6px;
+  }
+  
+  .header-actions .ant-btn {
+    font-size: 11px;
+    padding: 3px 8px;
   }
 }
 </style>

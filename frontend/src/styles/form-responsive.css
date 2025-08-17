@@ -1,0 +1,408 @@
+/* 通用表单响应式样式 */
+
+/* 基础表单样式 */
+.responsive-form {
+  width: 100%;
+}
+
+.responsive-form .ant-form-item {
+  margin-bottom: 24px;
+}
+
+.responsive-form .ant-form-item-label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 14px;
+}
+
+/* 输入框统一样式 */
+.responsive-form .ant-input,
+.responsive-form .ant-input-password,
+.responsive-form .ant-select .ant-select-selector,
+.responsive-form .ant-input-number,
+.responsive-form .ant-textarea {
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.responsive-form .ant-input:hover,
+.responsive-form .ant-input-password:hover,
+.responsive-form .ant-select .ant-select-selector:hover,
+.responsive-form .ant-input-number:hover,
+.responsive-form .ant-textarea:hover {
+  border-color: #667eea;
+}
+
+.responsive-form .ant-input:focus,
+.responsive-form .ant-input-password:focus,
+.responsive-form .ant-select-focused .ant-select-selector,
+.responsive-form .ant-input-number-focused,
+.responsive-form .ant-textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 按钮统一样式 */
+.responsive-form .ant-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  height: 40px;
+  font-size: 14px;
+}
+
+.responsive-form .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.responsive-form .ant-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+/* 表单验证错误样式 */
+.responsive-form .ant-form-item-has-error .ant-input,
+.responsive-form .ant-form-item-has-error .ant-input-password,
+.responsive-form .ant-form-item-has-error .ant-select .ant-select-selector,
+.responsive-form .ant-form-item-has-error .ant-input-number,
+.responsive-form .ant-form-item-has-error .ant-textarea {
+  border-color: #ff4d4f;
+}
+
+.responsive-form .ant-form-item-has-error .ant-input:hover,
+.responsive-form .ant-form-item-has-error .ant-input-password:hover,
+.responsive-form .ant-form-item-has-error .ant-select .ant-select-selector:hover,
+.responsive-form .ant-form-item-has-error .ant-input-number:hover,
+.responsive-form .ant-form-item-has-error .ant-textarea:hover {
+  border-color: #ff4d4f;
+}
+
+.responsive-form .ant-form-item-has-error .ant-input:focus,
+.responsive-form .ant-form-item-has-error .ant-input-password:focus,
+.responsive-form .ant-form-item-has-error .ant-select-focused .ant-select-selector,
+.responsive-form .ant-form-item-has-error .ant-input-number-focused,
+.responsive-form .ant-form-item-has-error .ant-textarea:focus {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.1);
+}
+
+.responsive-form .ant-form-item-explain-error {
+  color: #ff4d4f;
+  font-weight: 500;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* Switch 和 Checkbox 样式 */
+.responsive-form .ant-switch {
+  background-color: #e2e8f0;
+}
+
+.responsive-form .ant-switch-checked {
+  background-color: #667eea;
+}
+
+.responsive-form .ant-checkbox-wrapper {
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.responsive-form .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+/* 输入组样式 */
+.responsive-form .ant-input-group-compact .ant-input {
+  border-radius: 8px 0 0 8px;
+}
+
+.responsive-form .ant-input-group-compact .ant-btn {
+  border-radius: 0 8px 8px 0;
+  height: 42px;
+}
+
+/* 平板响应式 (768px 及以下) */
+@media (max-width: 768px) {
+  .responsive-form .ant-form-item {
+    margin-bottom: 20px;
+  }
+  
+  .responsive-form .ant-input,
+  .responsive-form .ant-input-password,
+  .responsive-form .ant-select .ant-select-selector,
+  .responsive-form .ant-input-number,
+  .responsive-form .ant-textarea {
+    padding: 12px 16px;
+    font-size: 16px; /* 防止iOS缩放 */
+    border-radius: 10px;
+  }
+  
+  .responsive-form .ant-btn {
+    height: 44px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+  
+  .responsive-form .ant-input-group-compact .ant-input {
+    border-radius: 10px 0 0 10px;
+  }
+  
+  .responsive-form .ant-input-group-compact .ant-btn {
+    border-radius: 0 10px 10px 0;
+    height: 46px;
+  }
+}
+
+/* 手机响应式 (480px 及以下) */
+@media (max-width: 480px) {
+  .responsive-form .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .responsive-form .ant-form-item-label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .responsive-form .ant-input,
+  .responsive-form .ant-input-password,
+  .responsive-form .ant-select .ant-select-selector,
+  .responsive-form .ant-input-number,
+  .responsive-form .ant-textarea {
+    padding: 10px 14px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  .responsive-form .ant-btn {
+    height: 40px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  /* 输入组在手机上垂直排列 */
+  .responsive-form .ant-input-group-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .responsive-form .ant-input-group-compact .ant-input {
+    width: 100% !important;
+    border-radius: 8px;
+  }
+  
+  .responsive-form .ant-input-group-compact .ant-btn {
+    width: 100% !important;
+    border-radius: 8px;
+    height: 40px;
+  }
+  
+  .responsive-form .ant-checkbox-wrapper {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  .responsive-form .ant-form-item-explain-error {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}
+
+/* 超小屏幕 (360px 及以下) */
+@media (max-width: 360px) {
+  .responsive-form .ant-form-item {
+    margin-bottom: 14px;
+  }
+  
+  .responsive-form .ant-input,
+  .responsive-form .ant-input-password,
+  .responsive-form .ant-select .ant-select-selector,
+  .responsive-form .ant-input-number,
+  .responsive-form .ant-textarea {
+    padding: 8px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+  }
+  
+  .responsive-form .ant-btn {
+    height: 36px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+  
+  .responsive-form .ant-input-group-compact .ant-btn {
+    height: 36px;
+  }
+}
+
+/* 模态框表单特殊样式 */
+.modal-form {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.modal-form .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 模态框响应式 */
+.responsive-modal .ant-modal {
+  max-width: calc(100vw - 32px);
+}
+
+.responsive-modal .ant-modal-content {
+  border-radius: 12px;
+}
+
+.responsive-modal .ant-modal-header {
+  border-radius: 12px 12px 0 0;
+  padding: 20px 24px;
+}
+
+.responsive-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.responsive-modal .ant-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  .responsive-modal .ant-modal {
+    max-width: calc(100vw - 24px);
+    margin: 12px;
+  }
+  
+  .responsive-modal .ant-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .responsive-modal .ant-modal-body {
+    padding: 20px;
+  }
+  
+  .responsive-modal .ant-modal-footer {
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-modal .ant-modal {
+    max-width: calc(100vw - 16px);
+    margin: 8px;
+  }
+  
+  .responsive-modal .ant-modal-content {
+    border-radius: 10px;
+  }
+  
+  .responsive-modal .ant-modal-header {
+    padding: 14px 16px;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  .responsive-modal .ant-modal-body {
+    padding: 16px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+  
+  .responsive-modal .ant-modal-footer {
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .responsive-modal .ant-modal-footer .ant-btn {
+    flex: 1;
+    height: 40px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .responsive-modal .ant-modal {
+    max-width: calc(100vw - 12px);
+    margin: 6px;
+  }
+  
+  .responsive-modal .ant-modal-header {
+    padding: 12px 14px;
+  }
+  
+  .responsive-modal .ant-modal-body {
+    padding: 14px;
+  }
+  
+  .responsive-modal .ant-modal-footer {
+    padding: 10px 14px;
+  }
+  
+  .responsive-modal .ant-modal-footer .ant-btn {
+    height: 36px;
+    font-size: 13px;
+  }
+}
+
+/* 表单动画效果 */
+.responsive-form .ant-form-item {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 焦点可见性 */
+.responsive-form .ant-input:focus-visible,
+.responsive-form .ant-btn:focus-visible,
+.responsive-form .ant-checkbox:focus-visible,
+.responsive-form .ant-select:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* 加载状态 */
+.responsive-form .ant-btn-loading {
+  pointer-events: none;
+}
+
+.responsive-form .ant-spin-dot {
+  color: white;
+}
+
+/* 禁用状态 */
+.responsive-form .ant-input:disabled,
+.responsive-form .ant-input-password:disabled,
+.responsive-form .ant-select-disabled .ant-select-selector,
+.responsive-form .ant-input-number:disabled,
+.responsive-form .ant-textarea:disabled {
+  background-color: #f7fafc;
+  border-color: #e2e8f0;
+  color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.responsive-form .ant-btn:disabled {
+  background-color: #e2e8f0;
+  border-color: #e2e8f0;
+  color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

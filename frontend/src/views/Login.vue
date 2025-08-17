@@ -17,7 +17,7 @@
         :model="loginForm" 
         :rules="rules" 
         ref="loginFormRef" 
-        class="login-form"
+        class="login-form responsive-form"
         @submit.prevent="handleLogin"
         layout="vertical"
       >
@@ -492,57 +492,160 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .login-container {
+    padding: 16px;
+  }
+  
   .login-card {
-    margin: 20px;
-    padding: 40px 30px;
-    max-width: 400px;
+    margin: 0;
+    padding: 32px 24px;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .login-header {
+    margin-bottom: 32px;
+  }
+  
+  .logo {
+    gap: 10px;
+    margin-bottom: 12px;
   }
   
   .logo h1 {
-    font-size: 28px;
+    font-size: 26px;
   }
   
   .logo-icon {
-    font-size: 36px;
+    font-size: 34px;
   }
   
   .subtitle {
     font-size: 14px;
   }
+  
+  :deep(.ant-form-item) {
+    margin-bottom: 20px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password) {
+    padding: 12px 16px;
+    font-size: 16px; /* 防止iOS缩放 */
+    border-radius: 10px;
+  }
+  
+  :deep(.login-button) {
+    height: 48px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+  
+  .demo-info {
+    padding: 14px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+  
+  .register-link {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
+  .login-container {
+    padding: 12px;
+  }
+  
   .login-card {
-    margin: 16px;
-    padding: 30px 24px;
-    border-radius: 20px;
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+  
+  .login-header {
+    margin-bottom: 24px;
+  }
+  
+  .logo {
+    gap: 8px;
+    margin-bottom: 10px;
   }
   
   .logo h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
   
   .logo-icon {
-    font-size: 32px;
+    font-size: 28px;
   }
   
   .subtitle {
     font-size: 13px;
   }
   
-  :deep(.login-button) {
-    height: 46px;
-    font-size: 15px;
+  :deep(.ant-form-item) {
+    margin-bottom: 16px;
   }
   
-  :deep(.ant-input) {
+  :deep(.ant-input),
+  :deep(.ant-input-password) {
     padding: 10px 14px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  :deep(.login-button) {
+    height: 44px;
     font-size: 15px;
+    border-radius: 8px;
   }
   
   .demo-info {
     padding: 12px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  
+  .register-link {
     font-size: 13px;
+    margin: 12px 0 0 0;
+  }
+  
+  /* 优化复选框在小屏幕上的显示 */
+  :deep(.ant-checkbox-wrapper) {
+    font-size: 14px;
+  }
+  
+  /* 优化表单验证错误信息 */
+  :deep(.ant-form-item-explain-error) {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 360px) {
+  .login-card {
+    padding: 20px 16px;
+  }
+  
+  .logo h1 {
+    font-size: 20px;
+  }
+  
+  .logo-icon {
+    font-size: 26px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password) {
+    padding: 8px 12px;
+    font-size: 15px;
+  }
+  
+  :deep(.login-button) {
+    height: 42px;
+    font-size: 14px;
   }
 }
 

@@ -65,7 +65,7 @@
         :loading="loading" 
         :columns="columns"
         row-key="id"
-        :scroll="{ x: 1200 }"
+        :scroll="{ x: isSmallScreen ? 800 : 1200 }"
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'model_provider'">
@@ -113,8 +113,8 @@
     </a-card>
 
     <!-- 编辑对话框 -->
-    <a-modal v-model:open="editDialogVisible" title="编辑 API 密钥" width="600px">
-      <a-form :model="editingKey" layout="vertical">
+    <a-modal v-model:open="editDialogVisible" title="编辑 API 密钥" width="600px" class="responsive-modal">
+      <a-form :model="editingKey" layout="vertical" class="responsive-form modal-form">
         <a-form-item label="模型平台">
           <a-input v-model:value="editingKey.model_provider" disabled />
         </a-form-item>
@@ -142,7 +142,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import { PlusOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import request from '../utils/request'
@@ -361,52 +361,84 @@ export default {
       return new Date(dateString).toLocaleString('zh-CN')
     }
 
-    // 表格列配置
-    const columns = [
-      {
-        title: '模型平台',
-        dataIndex: 'model_provider',
-        width: 120,
-        fixed: 'left'
-      },
-      {
-        title: 'API 密钥',
-        dataIndex: 'api_key',
-        width: 200
-      },
-      {
-        title: 'Base URL',
-        dataIndex: 'base_url',
-        width: 250
-      },
-      {
-        title: '状态',
-        dataIndex: 'is_active',
-        width: 100
-      },
-      {
-        title: '更新时间',
-        dataIndex: 'updated_at',
-        width: 180
-      },
-      {
-        title: '操作',
-        dataIndex: 'action',
-        width: 200,
-        fixed: 'right'
+    // 检测屏幕尺寸
+    const isSmallScreen = ref(false)
+    
+    const checkScreenSize = () => {
+      isSmallScreen.value = window.innerWidth <= 768
+    }
+    
+    // 响应式表格列配置
+    const columns = computed(() => {
+      const baseColumns = [
+        {
+          title: '模型平台',
+          dataIndex: 'model_provider',
+          width: isSmallScreen.value ? 100 : 120,
+          fixed: isSmallScreen.value ? false : 'left'
+        },
+        {
+          title: 'API 密钥',
+          dataIndex: 'api_key',
+          width: isSmallScreen.value ? 150 : 200
+        },
+        {
+          title: 'Base URL',
+          dataIndex: 'base_url',
+          width: isSmallScreen.value ? 180 : 250,
+          responsive: ['md']
+        },
+        {
+          title: '状态',
+          dataIndex: 'is_active',
+          width: isSmallScreen.value ? 80 : 100
+        },
+        {
+          title: '更新时间',
+          dataIndex: 'updated_at',
+          width: isSmallScreen.value ? 120 : 180,
+          responsive: ['lg']
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: isSmallScreen.value ? 120 : 200,
+          fixed: isSmallScreen.value ? false : 'right'
+        }
+      ]
+      
+      // 在小屏幕下过滤掉某些列
+      if (isSmallScreen.value) {
+        return baseColumns.filter(col => 
+          !col.responsive || 
+          (col.responsive.includes('sm') || col.responsive.length === 0)
+        )
       }
-    ]
+      
+      return baseColumns
+    })
 
     onMounted(() => {
       loadProviders()
       loadApiKeys()
+      checkScreenSize()
+      window.addEventListener('resize', checkScreenSize)
     })
+    
+    // 清理事件监听器
+    const cleanup = () => {
+      window.removeEventListener('resize', checkScreenSize)
+    }
+    
+    // 在组件卸载时清理
+    watch(() => {}, cleanup, { flush: 'post' })
 
     return {
       loading,
       saving,
       updating,
       editDialogVisible,
+       isSmallScreen,
       keyForm,
       providers,      
       apiKeys,
@@ -841,6 +873,56 @@ export default {
   min-height: 200px;
 }
 
+/* 表单组件优化 */
+:deep(.ant-form-item-label) {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+:deep(.ant-input),
+:deep(.ant-input-password),
+:deep(.ant-select .ant-select-selector) {
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+:deep(.ant-input:hover),
+:deep(.ant-input-password:hover),
+:deep(.ant-select .ant-select-selector:hover) {
+  border-color: #667eea;
+}
+
+:deep(.ant-input:focus),
+:deep(.ant-input-password:focus),
+:deep(.ant-select-focused .ant-select-selector) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* 模态框优化 */
+:deep(.ant-modal) {
+  max-width: calc(100vw - 32px);
+}
+
+:deep(.ant-modal-content) {
+  border-radius: 12px;
+}
+
+:deep(.ant-modal-header) {
+  border-radius: 12px 12px 0 0;
+  padding: 20px 24px;
+}
+
+:deep(.ant-modal-body) {
+  padding: 24px;
+}
+
+:deep(.ant-modal-footer) {
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .api-keys-container {
@@ -870,6 +952,30 @@ export default {
     padding: 16px;
   }
   
+  /* 表单在平板上的优化 */
+  :deep(.ant-form-item) {
+    margin-bottom: 20px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password),
+  :deep(.ant-select .ant-select-selector) {
+    padding: 10px 12px;
+    font-size: 16px; /* 防止iOS缩放 */
+  }
+  
+  :deep(.ant-btn) {
+    height: 40px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  /* 模态框在平板上的优化 */
+  :deep(.ant-modal) {
+    max-width: calc(100vw - 24px);
+    margin: 12px;
+  }
+  
   :deep(.ant-modal-header) {
     padding: 16px 20px;
   }
@@ -879,29 +985,232 @@ export default {
   }
   
   :deep(.ant-modal-footer) {
-    padding: 16px 20px;
+    padding: 12px 20px;
+  }
+}
+
+/* 中等屏幕优化 */
+@media (max-width: 768px) {
+  .api-keys-container {
+    padding: 12px 16px 24px;
+  }
+  
+  /* 表格在中等屏幕的优化 */
+  :deep(.ant-table-tbody > tr > td),
+  :deep(.ant-table-thead > tr > th) {
+    padding: 10px 8px;
+    font-size: 0.9rem;
+  }
+  
+  /* 操作按钮组优化 */
+  :deep(.ant-space) {
+    flex-wrap: wrap;
+    gap: 4px !important;
+  }
+  
+  :deep(.ant-space .ant-btn) {
+    font-size: 12px;
+    padding: 4px 8px;
+    height: 28px;
   }
 }
 
 @media (max-width: 480px) {
+  .api-keys-container {
+    padding: 8px 12px 16px;
+  }
+  
   .header h1 {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
   
-  .api-key-display {
-    font-size: 0.75rem;
-    padding: 6px 10px;
+  .header p {
+    font-size: 0.85rem;
   }
   
-  :deep(.ant-table-tbody > tr > td),
-  :deep(.ant-table-thead > tr > th) {
-    padding: 12px 8px;
-    font-size: 0.9rem;
+  :deep(.add-key-card .ant-card-head),
+  :deep(.keys-list-card .ant-card-head) {
+    padding: 10px 14px;
+  }
+  
+  :deep(.add-key-card .ant-card-body),
+  :deep(.keys-list-card .ant-card-body) {
+    padding: 14px;
+  }
+  
+  /* 表单在手机上改为3行布局 */
+  :deep(.ant-row) {
+    flex-direction: column;
+  }
+  
+  :deep(.ant-col) {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  :deep(.ant-form-item) {
+    margin-bottom: 16px;
+  }
+  
+  :deep(.ant-form-item-label) {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password),
+  :deep(.ant-select .ant-select-selector) {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 6px;
   }
   
   :deep(.ant-btn) {
-    font-size: 0.9rem;
+    height: 36px;
+    font-size: 13px;
     padding: 6px 12px;
+    border-radius: 6px;
+  }
+  
+  /* API密钥显示优化 */
+  .api-key-display {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+  
+  /* 表格在手机上的优化 */
+  :deep(.ant-table-tbody > tr > td),
+  :deep(.ant-table-thead > tr > th) {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* 移除固定列的阴影效果 */
+  :deep(.ant-table-cell-fix-left),
+  :deep(.ant-table-cell-fix-right) {
+    box-shadow: none !important;
+  }
+  
+  /* 表格容器优化 */
+  :deep(.ant-table-container) {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* 表格滚动条优化 */
+  :deep(.ant-table-body) {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+  }
+  
+  :deep(.ant-table-body::-webkit-scrollbar) {
+    height: 6px;
+  }
+  
+  :deep(.ant-table-body::-webkit-scrollbar-track) {
+    background: #f3f4f6;
+    border-radius: 3px;
+  }
+  
+  :deep(.ant-table-body::-webkit-scrollbar-thumb) {
+    background: #d1d5db;
+    border-radius: 3px;
+  }
+  
+  :deep(.ant-table-body::-webkit-scrollbar-thumb:hover) {
+    background: #9ca3af;
+  }
+  
+  /* 模态框在手机上的优化 */
+  :deep(.ant-modal) {
+    max-width: calc(100vw - 16px);
+    margin: 8px;
+  }
+  
+  :deep(.ant-modal-content) {
+    border-radius: 10px;
+  }
+  
+  :deep(.ant-modal-header) {
+    padding: 14px 16px;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  :deep(.ant-modal-body) {
+    padding: 16px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+  
+  :deep(.ant-modal-footer) {
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  :deep(.ant-modal-footer .ant-btn) {
+    flex: 1;
+    height: 36px;
+    font-size: 13px;
+  }
+  
+  /* 表单验证错误信息优化 */
+  :deep(.ant-form-item-explain-error) {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 360px) {
+  .header h1 {
+    font-size: 1.4rem;
+  }
+  
+  :deep(.add-key-card .ant-card-body),
+  :deep(.keys-list-card .ant-card-body) {
+    padding: 12px;
+  }
+  
+  :deep(.ant-modal) {
+    max-width: calc(100vw - 12px);
+    margin: 6px;
+  }
+  
+  :deep(.ant-modal-header) {
+    padding: 12px 14px;
+  }
+  
+  :deep(.ant-modal-body) {
+    padding: 14px;
+  }
+  
+  :deep(.ant-modal-footer) {
+    padding: 10px 14px;
+  }
+  
+  :deep(.ant-modal-footer .ant-btn) {
+    height: 34px;
+    font-size: 12px;
+  }
+  
+  :deep(.ant-input),
+  :deep(.ant-input-password),
+  :deep(.ant-select .ant-select-selector) {
+    padding: 6px 10px;
+    font-size: 15px;
+  }
+  
+  .api-key-display {
+    font-size: 0.7rem;
+    padding: 4px 8px;
   }
 }
 
