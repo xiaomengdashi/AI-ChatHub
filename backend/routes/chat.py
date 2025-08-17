@@ -173,11 +173,9 @@ def chat_stream(current_user):
                                 complete_response += content
                                 yield f"data: {json.dumps({'type': 'content', 'content': content})}\n\n"
                             
-                            # 处理推理内容 - delta.reasoning_content
-                            if chunk.choices[0].delta.reasoning_content:
-                                reasoning = chunk.choices[0].delta.reasoning_content
-                                complete_reasoning += reasoning
-                                yield f"data: {json.dumps({'type': 'reasoning', 'content': reasoning})}\n\n"
+                            # 注意：OpenAI API 的 ChoiceDelta 对象没有 reasoning_content 属性
+                            # 如果需要推理功能，需要使用支持推理的模型（如 o1 系列）
+                            # 并检查相应的属性名称
                         
                         # 在新的应用上下文中保存数据
                         with app.app_context():

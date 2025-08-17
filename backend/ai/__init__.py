@@ -1,4 +1,5 @@
 from .base_client import BaseAIClient
+from .openai_client import OpenAIClient
 from .siliconflow_client import SiliconFlowClient
 from .baidu_client import BaiduClient
 from .alibaba_client import AlibabaClient
@@ -62,6 +63,7 @@ class AIClient:
 
 __all__ = [
     'BaseAIClient',
+    'OpenAIClient',
     'SiliconFlowClient',
     'BaiduClient',
     'AlibabaClient',

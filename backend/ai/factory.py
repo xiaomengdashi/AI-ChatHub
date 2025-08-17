@@ -1,5 +1,6 @@
 from typing import Dict, Type, Optional
 from .base_client import BaseAIClient
+from .openai_client import OpenAIClient
 from .siliconflow_client import SiliconFlowClient
 from .baidu_client import BaiduClient
 from .alibaba_client import AlibabaClient
@@ -11,6 +12,7 @@ class AIClientFactory:
     
     # 注册的客户端类映射
     _clients: Dict[str, Type[BaseAIClient]] = {
+        'openai': OpenAIClient,
         'siliconflow': SiliconFlowClient,
         'baidu': BaiduClient,
         'alibaba': AlibabaClient,
