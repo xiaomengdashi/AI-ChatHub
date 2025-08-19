@@ -3,14 +3,11 @@ import Home from '../views/Home.vue'
 import Chat from '../views/Chat.vue'
 import Pricing from '../views/Pricing.vue'
 import Dashboard from '../views/Dashboard.vue'
-import ApiKeys from '../views/ApiKeys.vue'
-import Models from '../views/Models.vue'
+import Management from '../views/Management.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import UserManagement from '../views/UserManagement.vue'
 import ConversationDetail from '../views/ConversationDetail.vue'
-import Providers from '../views/Providers.vue'
-
 
 // 检查用户是否已登录
 function isAuthenticated() {
@@ -37,6 +34,7 @@ function isAdmin() {
     return false
   }
 }
+
 const routes = [
   {
     path: '/',
@@ -44,11 +42,11 @@ const routes = [
     component: Home
   },
   {
-      path: '/chat',
-      name: 'Chat',
-      component: Chat,
-      meta: { requiresAuth: true }
-    },
+    path: '/chat',
+    name: 'Chat',
+    component: Chat,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/conversations/:id',
     name: 'ConversationDetail',
@@ -67,27 +65,15 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
-    path: '/api-keys',
-    name: 'ApiKeys',
-    component: ApiKeys,
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/models',
-    name: 'Models',
-    component: Models,
+    path: '/management',
+    name: 'Management',
+    component: Management,
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/users',
     name: 'UserManagement',
     component: UserManagement,
-    meta: { requiresAuth: true, requiresAdmin: true }
-  },
-  {
-    path: '/providers',
-    name: 'Providers',
-    component: Providers,
     meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
