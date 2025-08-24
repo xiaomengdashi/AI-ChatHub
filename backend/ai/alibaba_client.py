@@ -46,15 +46,21 @@ class AlibabaClient(BaseAIClient):
         params = self._get_default_params()
         params.update(kwargs)
         
+        parameters = {
+            "temperature": params.get('temperature', 0.7),
+            "max_tokens": params.get('max_tokens', 2048)
+        }
+        
+        # 添加stop参数支持
+        if 'stop' in kwargs and kwargs['stop']:
+            parameters['stop'] = kwargs['stop']
+        
         payload = {
             "model": model,
             "input": {
                 "messages": [{"role": "user", "content": message}]
             },
-            "parameters": {
-                "temperature": params.get('temperature', 0.7),
-                "max_tokens": params.get('max_tokens', 2048)
-            }
+            "parameters": parameters
         }
         
         headers = {
@@ -97,16 +103,22 @@ class AlibabaClient(BaseAIClient):
         params = self._get_default_params()
         params.update(kwargs)
         
+        parameters = {
+            "temperature": params.get('temperature', 0.7),
+            "max_tokens": params.get('max_tokens', 2048),
+            "incremental_output": True
+        }
+        
+        # 添加stop参数支持
+        if 'stop' in kwargs and kwargs['stop']:
+            parameters['stop'] = kwargs['stop']
+        
         payload = {
             "model": model,
             "input": {
                 "messages": [{"role": "user", "content": message}]
             },
-            "parameters": {
-                "temperature": params.get('temperature', 0.7),
-                "max_tokens": params.get('max_tokens', 2048),
-                "incremental_output": True
-            }
+            "parameters": parameters
         }
         
         headers = {

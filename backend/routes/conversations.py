@@ -34,13 +34,7 @@ def get_conversations(current_user):
         )
     )
     
-    if is_admin:
-        # 管理员：可以查看所有对话，若指定user_id则只看该用户
-        if user_id_filter:
-            query = query.filter(Conversation.user_id == user_id_filter)
-    else:
-        # 普通用户：仅查看自己的对话
-        query = query.filter(Conversation.user_id == current_user.id)
+    query = query.filter(Conversation.user_id == current_user.id)
     
     conversations_with_count = query.group_by(
         Conversation.id, User.username

@@ -1,14 +1,14 @@
 <template>
   <div class="management-container">
     <a-tabs v-model:activeKey="activeTab" class="management-tabs">
-      <a-tab-pane key="models" tab="模型平台">
-        <Models />
+      <a-tab-pane key="providers" tab="模型提供商">
+        <Providers />
       </a-tab-pane>
       <a-tab-pane key="api-keys" tab="API密钥">
         <ApiKeys />
       </a-tab-pane>
-      <a-tab-pane key="providers" tab="大模型管理">
-        <Providers />
+      <a-tab-pane key="models" tab="大模型管理">
+        <Models />
       </a-tab-pane>
     </a-tabs>
   </div>

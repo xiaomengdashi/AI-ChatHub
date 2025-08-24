@@ -39,6 +39,10 @@ class ZhipuClient(BaseAIClient):
             "max_tokens": params.get('max_tokens', 2048)
         }
         
+        # 添加stop参数支持
+        if 'stop' in kwargs and kwargs['stop']:
+            payload['stop'] = kwargs['stop']
+        
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"

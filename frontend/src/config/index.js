@@ -1,8 +1,8 @@
 // API配置
 const config = {
-  // 开发环境配置 - 使用相对路径，通过Vite代理转发
+  // 开发环境配置 - 使用环境变量或默认地址
   development: {
-    API_BASE_URL: ''  // 空字符串表示使用相对路径
+    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'
   },
   // 生产环境配置 - 使用完整的API地址
   production: {

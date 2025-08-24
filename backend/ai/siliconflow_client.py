@@ -39,6 +39,10 @@ class SiliconFlowClient(BaseAIClient):
             "temperature": params.get('temperature', 0.7)
         }
         
+        # 添加stop参数支持
+        if 'stop' in kwargs and kwargs['stop']:
+            payload['stop'] = kwargs['stop']
+        
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"

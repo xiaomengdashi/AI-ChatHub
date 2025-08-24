@@ -44,22 +44,6 @@ class AIClient:
                 return None
             else:
                 return f"抱歉，调用{provider} AI API时发生错误: {str(e)}"
-    
-    # 保持向后兼容的方法
-    @staticmethod
-    def call_siliconflow_api(model: str, message: str, api_key: str, **kwargs):
-        """调用硅基流动API（向后兼容）"""
-        return AIClient.call_ai_api('siliconflow', model, message, api_key, stream=False, **kwargs)
-    
-    @staticmethod
-    def call_siliconflow_api_sync(model: str, message: str, api_key: str, **kwargs):
-        """同步调用硅基流动API（向后兼容）"""
-        return AIClient.call_ai_api('siliconflow', model, message, api_key, stream=False, **kwargs)
-    
-    @staticmethod
-    def call_siliconflow_api_stream(model: str, message: str, api_key: str, **kwargs):
-        """流式调用硅基流动API（向后兼容）"""
-        return AIClient.call_ai_api('siliconflow', model, message, api_key, stream=True, **kwargs)
 
 __all__ = [
     'BaseAIClient',

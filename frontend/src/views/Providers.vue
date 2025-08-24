@@ -2,7 +2,7 @@
   <div class="providers-view"></div>
   <div class="providers-container">
     <div class="header">
-      <h2>模型平台管理</h2>
+      <h2>模型提供商管理</h2>
       <a-button type="primary" @click="showAddModal">
         <template #icon>
           <PlusOutlined />

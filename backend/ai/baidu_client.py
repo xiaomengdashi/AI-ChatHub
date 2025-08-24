@@ -75,6 +75,10 @@ class BaiduClient(BaseAIClient):
             "max_output_tokens": params.get('max_tokens', 2048)
         }
         
+        # 添加stop参数支持
+        if 'stop' in kwargs and kwargs['stop']:
+            payload['stop'] = kwargs['stop']
+        
         headers = {
             "Content-Type": "application/json"
         }
@@ -122,6 +126,10 @@ class BaiduClient(BaseAIClient):
             "max_output_tokens": params.get('max_tokens', 2048),
             "stream": True
         }
+        
+        # 添加stop参数支持
+        if 'stop' in kwargs and kwargs['stop']:
+            payload['stop'] = kwargs['stop']
         
         headers = {
             "Content-Type": "application/json"

@@ -177,12 +177,27 @@
                 class="message-input"
                 :disabled="isLoading"
               />
+              <!-- 停止对话按钮 -->
               <a-button 
+                v-if="isLoading && currentAbortController"
+                type="default" 
+                class="stop-btn"
+                @click="stopStreaming"
+                size="large"
+                danger
+              >
+                <template #icon>
+                  <StopOutlined />
+                </template>
+              </a-button>
+              <!-- 发送按钮 -->
+              <a-button 
+                v-else
                 type="primary" 
                 class="send-btn"
                 @click="sendMessage"
                 size="large"
-                :disabled="isLoading"
+                :disabled="isLoading || !inputMessage.trim()"
               >
                 <template #icon>
                   <SendOutlined />
@@ -214,7 +229,8 @@ import {
   DeleteOutlined, 
   PlusOutlined,
   RightOutlined,
-  MenuOutlined
+  MenuOutlined,
+  StopOutlined
 } from '@ant-design/icons-vue'
 
 export default {
@@ -230,7 +246,8 @@ export default {
     DeleteOutlined,
     PlusOutlined,
     RightOutlined,
-    MenuOutlined
+    MenuOutlined,
+    StopOutlined
   },
   data() {
     return {
@@ -487,6 +504,7 @@ export default {
                       this.messages[messageIndex].isStreaming = false
                     }
                     // 清理流式状态
+                    this.isLoading = false
                     this.currentAbortController = null
                     this.currentStreamingConversationId = null
                     // 重新加载对话列表
@@ -691,6 +709,26 @@ export default {
         return `${model.display_name} | ${providerName}`
       }
       return modelName
+    },
+    
+    stopStreaming() {
+      if (this.currentAbortController) {
+        this.currentAbortController.abort()
+        this.currentAbortController = null
+        this.isLoading = false
+        
+        // 找到正在流式输出的消息并标记为已完成
+        const streamingMessage = this.messages.find(m => m.isStreaming)
+        if (streamingMessage) {
+          streamingMessage.isStreaming = false
+          if (!streamingMessage.content.trim()) {
+            // 如果没有内容，显示停止提示
+            streamingMessage.content = '对话已被用户停止'
+          }
+        }
+        
+        message.info('已停止AI回复')
+      }
     }
   }
 }
@@ -1388,6 +1426,57 @@ export default {
 }
 
 :deep(.send-btn .anticon) {
+  font-size: 16px;
+  color: white;
+}
+
+/* 停止按钮样式 */
+:deep(.stop-btn) {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  box-shadow: 
+    0 6px 20px rgba(239, 68, 68, 0.35),
+    0 3px 10px rgba(220, 38, 38, 0.25);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+:deep(.stop-btn::before) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+:deep(.stop-btn:hover::before) {
+  left: 100%;
+}
+
+:deep(.stop-btn:hover) {
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 
+    0 12px 35px rgba(239, 68, 68, 0.45),
+    0 6px 18px rgba(220, 38, 38, 0.35);
+}
+
+:deep(.stop-btn:active) {
+  transform: translateY(-1px) scale(1.05);
+}
+
+:deep(.stop-btn .anticon) {
   font-size: 16px;
   color: white;
 }

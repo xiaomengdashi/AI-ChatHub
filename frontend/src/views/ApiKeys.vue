@@ -10,8 +10,8 @@
       <a-form :model="newKey" :rules="rules" ref="keyForm" layout="vertical">
         <a-row :gutter="20">
           <a-col :span="8">
-            <a-form-item label="模型平台" name="model_provider">
-              <a-select v-model:value="newKey.model_provider" placeholder="选择模型平台" style="width: 100%">
+            <a-form-item label="模型提供商" name="model_provider">
+              <a-select v-model:value="newKey.model_provider" placeholder="选择模型提供商" style="width: 100%">
                 <a-select-option v-for="p in providers" :key="p.provider_key" :value="p.provider_key">
                   {{ p.display_name }}
                 </a-select-option>
@@ -115,7 +115,7 @@
     <!-- 编辑对话框 -->
     <a-modal v-model:open="editDialogVisible" title="编辑 API 密钥" width="600px" class="responsive-modal">
       <a-form :model="editingKey" layout="vertical" class="responsive-form modal-form">
-        <a-form-item label="模型平台">
+        <a-form-item label="模型提供商">
           <a-input v-model:value="editingKey.model_provider" disabled />
         </a-form-item>
         <a-form-item label="API 密钥">
@@ -167,11 +167,11 @@ export default {
         if (response.data.success) {
           providers.value = Array.isArray(response.data.data) ? response.data.data : []
         } else {
-          message.error(response.data.message || '加载模型平台失败', 2)
+          message.error(response.data.message || '加载模型提供商失败', 2)
         }
       } catch (error) {
-        console.error('加载模型平台失败:', error)
-        message.error('加载模型平台失败: ' + (error.response?.data?.error || error.message), 2)
+        console.error('加载模型提供商失败:', error)
+        message.error('加载模型提供商失败: ' + (error.response?.data?.error || error.message), 2)
       }
     }
 
@@ -189,7 +189,7 @@ export default {
       base_url: ''
     })
 
-    // 监听模型平台选择变化，自动填充默认Base URL
+    // 监听模型提供商选择变化，自动填充默认Base URL
     watch(() => newKey.model_provider, (newProvider) => {
       if (newProvider) {
         const provider = providers.value.find(p => p.provider_key === newProvider)
@@ -199,7 +199,7 @@ export default {
       }
     })
 
-    // 监听编辑对话框中的模型平台变化
+    // 监听编辑对话框中的模型提供商变化
     watch(() => editingKey.model_provider, (newProvider) => {
       if (newProvider) {
         const provider = providers.value.find(p => p.provider_key === newProvider)
@@ -222,7 +222,7 @@ export default {
     
     const rules = {
       model_provider: [
-        { required: true, message: '请选择模型平台', trigger: 'change' }
+        { required: true, message: '请选择模型提供商', trigger: 'change' }
       ],
       api_key: [
         { required: true, message: '请输入API密钥', trigger: 'blur' }
@@ -372,7 +372,7 @@ export default {
     const columns = computed(() => {
       const baseColumns = [
         {
-          title: '模型平台',
+          title: '模型提供商',
           dataIndex: 'model_provider',
           width: isSmallScreen.value ? 100 : 120,
           fixed: isSmallScreen.value ? false : 'left'

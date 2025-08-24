@@ -75,7 +75,12 @@ def chat(current_user):
         api_key_record = get_active_api_key(provider)
         
         if api_key_record and api_key_record.api_key:
-            ai_response = AIClient.call_ai_api(provider, model, message, api_key_record)
+            # 提取额外参数，包括stop参数
+            extra_params = {}
+            if 'stop' in data and data['stop']:
+                extra_params['stop'] = data['stop']
+            
+            ai_response = AIClient.call_ai_api(provider, model, message, api_key_record, **extra_params)
         else:
             ai_response = f"请先在API密钥管理中配置 {provider} 平台的API密钥。"
         
@@ -155,8 +160,13 @@ def chat_stream(current_user):
                 api_key_record = get_active_api_key(provider)
                 
                 if api_key_record and api_key_record.api_key:
+                    # 提取额外参数，包括stop参数
+                    extra_params = {}
+                    if 'stop' in data and data['stop']:
+                        extra_params['stop'] = data['stop']
+                    
                     # 获取流式响应
-                    stream_response = AIClient.call_ai_api(provider, model, message, api_key_record, stream=True)
+                    stream_response = AIClient.call_ai_api(provider, model, message, api_key_record, stream=True, **extra_params)
                     
                     if stream_response:
                         complete_response = ""

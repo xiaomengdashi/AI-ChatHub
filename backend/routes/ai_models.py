@@ -27,8 +27,9 @@ def get_models():
         if model_type:
             query = query.filter(Model.model_type == model_type)
         
-        # 按排序顺序和创建时间排序
-        models = query.order_by(Model.sort_order.asc(), Model.created_at.desc()).all()
+        # 按提供商的sort_order排序，同一提供商内按时间排序
+        models = query.join(Provider, Model.model_provider == Provider.provider_key)\
+                     .order_by(Provider.sort_order.asc(), Provider.id.asc(), Model.created_at.desc()).all()
         
         return jsonify([model.to_dict() for model in models])
     except Exception as e:

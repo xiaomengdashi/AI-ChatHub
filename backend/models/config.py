@@ -21,7 +21,7 @@ class Config:
     JWT_EXPIRATION_DELTA = timedelta(hours=24)
     
     # CORS配置
-    CORS_ORIGINS = ['http://192.168.31.21:3000', 'http://localhost:3000']
+    CORS_ORIGINS = ['http://192.168.31.229:3000', 'http://localhost:3000', 'http://127.0.0.1:3000']
     CORS_SUPPORTS_CREDENTIALS = True
     
     # 服务器配置

@@ -6,6 +6,12 @@ from .baidu_client import BaiduClient
 from .alibaba_client import AlibabaClient
 from .zhipu_client import ZhipuClient
 from .deepseek_client import DeepSeekClient
+from .moonshot_client import MoonshotClient
+from .modasheng_client import ModashengClient
+from .aihubmix_client import AIHubMixClient
+from .anthropic_client import AnthropicClient
+from .gemini_client import GeminiClient
+from .volcengine_client import VolcengineClient
 
 class AIClientFactory:
     """AI客户端工厂类"""
@@ -17,7 +23,13 @@ class AIClientFactory:
         'baidu': BaiduClient,
         'alibaba': AlibabaClient,
         'zhipu': ZhipuClient,
-        'deepseek': DeepSeekClient
+        'deepseek': DeepSeekClient,
+        'moonshot': MoonshotClient,
+        'modasheng': ModashengClient,
+        'aihubmix': AIHubMixClient,
+        'anthropic': AnthropicClient,
+        'gemini': GeminiClient,
+        'volcengine': VolcengineClient
     }
     
     @classmethod
@@ -26,18 +38,16 @@ class AIClientFactory:
         根据提供商创建对应的AI客户端
         
         Args:
-            provider: 提供商名称
+            provider: 提供商名称，如果不支持则默认使用openai
             api_key: API密钥
             base_url: 可选的基础URL，如果不提供则从数据库获取
             
         Returns:
             对应的AI客户端实例
-            
-        Raises:
-            ValueError: 当提供商不支持时
         """
+        # 如果提供商不在支持列表中，默认使用openai
         if provider not in cls._clients:
-            raise ValueError(f"不支持的AI提供商: {provider}。支持的提供商: {list(cls._clients.keys())}")
+            provider = 'openai'
         
         # 如果没有提供base_url，尝试从数据库获取
         if base_url is None:
