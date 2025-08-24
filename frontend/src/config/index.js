@@ -2,7 +2,7 @@
 const config = {
   // 开发环境配置 - 使用环境变量或默认地址
   development: {
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'
+    API_BASE_URL: ''
   },
   // 生产环境配置 - 使用完整的API地址
   production: {
